@@ -1,0 +1,35 @@
+[0.789s] Invoking command in '/home/karroyabreu/ar4/src/pose_gui': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/karroyabreu/ar4/build/pose_gui/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/karroyabreu/ar4/install/pose_gui/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/pose_gui build --build-base /home/karroyabreu/ar4/build/pose_gui/build install --record /home/karroyabreu/ar4/build/pose_gui/install.log --single-version-externally-managed install_data
+[1.027s] running egg_info
+[1.027s] creating ../../build/pose_gui/pose_gui.egg-info
+[1.044s] writing ../../build/pose_gui/pose_gui.egg-info/PKG-INFO
+[1.044s] writing dependency_links to ../../build/pose_gui/pose_gui.egg-info/dependency_links.txt
+[1.044s] writing requirements to ../../build/pose_gui/pose_gui.egg-info/requires.txt
+[1.044s] writing top-level names to ../../build/pose_gui/pose_gui.egg-info/top_level.txt
+[1.044s] writing manifest file '../../build/pose_gui/pose_gui.egg-info/SOURCES.txt'
+[1.074s] reading manifest file '../../build/pose_gui/pose_gui.egg-info/SOURCES.txt'
+[1.074s] writing manifest file '../../build/pose_gui/pose_gui.egg-info/SOURCES.txt'
+[1.075s] running build
+[1.075s] running build_py
+[1.075s] creating /home/karroyabreu/ar4/build/pose_gui/build
+[1.075s] creating /home/karroyabreu/ar4/build/pose_gui/build/lib
+[1.075s] creating /home/karroyabreu/ar4/build/pose_gui/build/lib/pose_gui
+[1.075s] copying pose_gui/pose_gui.py -> /home/karroyabreu/ar4/build/pose_gui/build/lib/pose_gui
+[1.075s] copying pose_gui/__init__.py -> /home/karroyabreu/ar4/build/pose_gui/build/lib/pose_gui
+[1.075s] running install
+[1.080s] running install_lib
+[1.099s] creating /home/karroyabreu/ar4/install/pose_gui/lib/python3.12/site-packages/pose_gui
+[1.099s] copying /home/karroyabreu/ar4/build/pose_gui/build/lib/pose_gui/pose_gui.py -> /home/karroyabreu/ar4/install/pose_gui/lib/python3.12/site-packages/pose_gui
+[1.099s] copying /home/karroyabreu/ar4/build/pose_gui/build/lib/pose_gui/__init__.py -> /home/karroyabreu/ar4/install/pose_gui/lib/python3.12/site-packages/pose_gui
+[1.100s] byte-compiling /home/karroyabreu/ar4/install/pose_gui/lib/python3.12/site-packages/pose_gui/pose_gui.py to pose_gui.cpython-312.pyc
+[1.100s] byte-compiling /home/karroyabreu/ar4/install/pose_gui/lib/python3.12/site-packages/pose_gui/__init__.py to __init__.cpython-312.pyc
+[1.101s] running install_data
+[1.101s] creating /home/karroyabreu/ar4/install/pose_gui/share/ament_index
+[1.101s] creating /home/karroyabreu/ar4/install/pose_gui/share/ament_index/resource_index
+[1.101s] creating /home/karroyabreu/ar4/install/pose_gui/share/ament_index/resource_index/packages
+[1.101s] copying resource/pose_gui -> /home/karroyabreu/ar4/install/pose_gui/share/ament_index/resource_index/packages
+[1.101s] copying package.xml -> /home/karroyabreu/ar4/install/pose_gui/share/pose_gui
+[1.101s] running install_egg_info
+[1.119s] Copying ../../build/pose_gui/pose_gui.egg-info to /home/karroyabreu/ar4/install/pose_gui/lib/python3.12/site-packages/pose_gui-0.0.0-py3.12.egg-info
+[1.119s] running install_scripts
+[1.219s] writing list of installed files to '/home/karroyabreu/ar4/build/pose_gui/install.log'
+[1.242s] Invoked command in '/home/karroyabreu/ar4/src/pose_gui' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/karroyabreu/ar4/build/pose_gui/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/karroyabreu/ar4/install/pose_gui/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/pose_gui build --build-base /home/karroyabreu/ar4/build/pose_gui/build install --record /home/karroyabreu/ar4/build/pose_gui/install.log --single-version-externally-managed install_data

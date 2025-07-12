@@ -1,0 +1,25 @@
+[0.180s] Invoking command in '/home/karroyabreu/ar4/build/programs_cpp': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/karroyabreu/ar4/build/programs_cpp -- -j22 -l22
+[0.240s] [ 50%] [32mBuilding CXX object CMakeFiles/prog1.dir/src/program1.cpp.o[0m
+[5.877s] [100%] [32m[1mLinking CXX executable prog1[0m
+[6.130s] [100%] Built target prog1
+[6.141s] Invoked command in '/home/karroyabreu/ar4/build/programs_cpp' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/karroyabreu/ar4/build/programs_cpp -- -j22 -l22
+[6.142s] Invoking command in '/home/karroyabreu/ar4/build/programs_cpp': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/karroyabreu/ar4/build/programs_cpp
+[6.150s] -- Install configuration: ""
+[6.150s] -- Installing: /home/karroyabreu/ar4/install/programs_cpp/lib/programs_cpp/prog1
+[6.150s] -- Set non-toolchain portion of runtime path of "/home/karroyabreu/ar4/install/programs_cpp/lib/programs_cpp/prog1" to ""
+[6.151s] -- Up-to-date: /home/karroyabreu/ar4/install/programs_cpp/share/ament_index/resource_index/package_run_dependencies/programs_cpp
+[6.151s] -- Up-to-date: /home/karroyabreu/ar4/install/programs_cpp/share/ament_index/resource_index/parent_prefix_path/programs_cpp
+[6.151s] -- Up-to-date: /home/karroyabreu/ar4/install/programs_cpp/share/programs_cpp/environment/ament_prefix_path.sh
+[6.151s] -- Up-to-date: /home/karroyabreu/ar4/install/programs_cpp/share/programs_cpp/environment/ament_prefix_path.dsv
+[6.151s] -- Up-to-date: /home/karroyabreu/ar4/install/programs_cpp/share/programs_cpp/environment/path.sh
+[6.151s] -- Up-to-date: /home/karroyabreu/ar4/install/programs_cpp/share/programs_cpp/environment/path.dsv
+[6.151s] -- Up-to-date: /home/karroyabreu/ar4/install/programs_cpp/share/programs_cpp/local_setup.bash
+[6.151s] -- Up-to-date: /home/karroyabreu/ar4/install/programs_cpp/share/programs_cpp/local_setup.sh
+[6.151s] -- Up-to-date: /home/karroyabreu/ar4/install/programs_cpp/share/programs_cpp/local_setup.zsh
+[6.151s] -- Up-to-date: /home/karroyabreu/ar4/install/programs_cpp/share/programs_cpp/local_setup.dsv
+[6.151s] -- Installing: /home/karroyabreu/ar4/install/programs_cpp/share/programs_cpp/package.dsv
+[6.151s] -- Up-to-date: /home/karroyabreu/ar4/install/programs_cpp/share/ament_index/resource_index/packages/programs_cpp
+[6.151s] -- Up-to-date: /home/karroyabreu/ar4/install/programs_cpp/share/programs_cpp/cmake/programs_cppConfig.cmake
+[6.151s] -- Up-to-date: /home/karroyabreu/ar4/install/programs_cpp/share/programs_cpp/cmake/programs_cppConfig-version.cmake
+[6.151s] -- Up-to-date: /home/karroyabreu/ar4/install/programs_cpp/share/programs_cpp/package.xml
+[6.152s] Invoked command in '/home/karroyabreu/ar4/build/programs_cpp' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/karroyabreu/ar4/build/programs_cpp

@@ -1,0 +1,22 @@
+-- Install configuration: ""
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/launch
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/launch/spawn_robot.launch.py
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/launch/world.launch.py
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/worlds
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/worlds/empty.sdf
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/worlds/world.sdf
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/ament_index/resource_index/package_run_dependencies/mec_mobile_gazebo
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/ament_index/resource_index/parent_prefix_path/mec_mobile_gazebo
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/environment/ament_prefix_path.sh
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/environment/ament_prefix_path.dsv
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/environment/path.sh
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/environment/path.dsv
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/local_setup.bash
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/local_setup.sh
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/local_setup.zsh
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/local_setup.dsv
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/package.dsv
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/ament_index/resource_index/packages/mec_mobile_gazebo
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/cmake/mec_mobile_gazeboConfig.cmake
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/cmake/mec_mobile_gazeboConfig-version.cmake
+-- Installing: /home/karroyabreu/ar4/install/mec_mobile_gazebo/share/mec_mobile_gazebo/package.xml

@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Macro to define camera link and joints -->
+  <xacro:macro name="camera_link" params="parent_link">
+    <joint name="camera_joint" type="fixed">
+      <parent link="${parent_link}"/>
+      <child link="camera_link"/>
+      <origin xyz="0 -.55 .4" rpy="0 1.57 0"/>
+    </joint>
+
+    <link name="camera_link">
+      <pose>0 0 0 0 0 0</pose>
+      <inertial>
+        <mass value="0.1"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia
+          ixx="1e-6" ixy="0" ixz="0"
+          iyy="1e-6" iyz="0"
+          izz="1e-6" />
+      </inertial>
+      <collision name='collision'>
+        <origin xyz="0 0 0" rpy="0 0 0"/> 
+        <geometry>
+          <box size=".03 .03 .03"/>
+        </geometry>
+      </collision>
+      <visual name='camera_link_visual'>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size=".03 .03 .03"/>
+        </geometry>
+      </visual>
+    </link>
+
+    <gazebo reference="camera_link">
+      <material>Gazebo/Red</material>
+    </gazebo>
+
+    <joint type="fixed" name="camera_optical_joint">
+      <origin xyz="0 0 0" rpy="-1.5707 0 -1.5707"/>
+      <child link="camera_link_optical"/>
+      <parent link="camera_link"/>
+    </joint>
+
+    <link name="camera_link_optical"/>
+  </xacro:macro>
+
+  <!-- Separate macro for Gazebo sensor block -->
+  <xacro:macro name="camera_sensor" params="link_name">
+    <gazebo reference="camera_link"><!-- added link reference-->
+      <sensor type="camera" name="camera_sensor">
+        <pose>0 0 0 0 0 0</pose>
+         
+        <always_on>1</always_on>
+        <update_rate>60</update_rate>
+        <visualize>true</visualize>
+        <topic>camera/image_raw</topic>  <!-- no leading slash -->
+        <material>Gazebo/Red</material>
+        <camera name="camera_sensor">
+          <horizontal_fov>1.658</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.01</near>
+            <far>10.0</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.007</stddev>
+          </noise>
+          <optical_frame_id>camera_link_optical</optical_frame_id>
+          <camera_info_topic>/camera/camera_info</camera_info_topic>
+        </camera>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+
+</robot>
