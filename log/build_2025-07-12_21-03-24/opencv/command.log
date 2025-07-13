@@ -1,0 +1,2 @@
+Invoking command in '/home/karroyabreu/ar4/build/opencv': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/karroyabreu/ar4/install/pose_gui:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/karroyabreu/ar4/build/opencv -- -j22 -l22
+Invoked command in '/home/karroyabreu/ar4/build/opencv' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/karroyabreu/ar4/install/pose_gui:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/karroyabreu/ar4/build/opencv -- -j22 -l22

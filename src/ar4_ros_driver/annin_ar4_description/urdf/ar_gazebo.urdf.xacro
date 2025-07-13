@@ -69,7 +69,29 @@
 
     <!-- Make the robot more fancy :)-->
     <gazebo reference="base_link" >
-        <material>Gazebo/Blue</material>
+        <material>Gazebo/White</material>
     </gazebo>
+    <gazebo reference="link_1" >
+        <material>Gazebo/White</material>
+    </gazebo>
+    <gazebo reference="link_2" >
+        <material>Gazebo/White</material>
+    </gazebo>
+    <gazebo reference="link_3" >
+        <material>Gazebo/White</material>
+    </gazebo>
+    <gazebo reference="link_4" >
+        <material>Gazebo/White</material>
+    </gazebo>
+    <gazebo reference="link_5" >
+        <material>Gazebo/White</material>
+    </gazebo>
+    <gazebo reference="link_6" >
+        <material>Gazebo/White</material>
+    </gazebo>
+    <gazebo reference="ee_link" > 
+        <material>Gazebo/White</material>
+    </gazebo>   
+    
 
 </robot>

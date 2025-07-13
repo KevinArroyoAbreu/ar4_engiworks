@@ -1,0 +1,84 @@
+[0.008s] Invoking command in '/home/karroyabreu/ar4/build/opencv': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/karroyabreu/ar4/install/pose_gui:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/karroyabreu/ar4/src/opencv -DCMAKE_INSTALL_PREFIX=/home/karroyabreu/ar4/install/opencv
+[0.051s] -- The C compiler identification is GNU 13.3.0
+[0.088s] -- The CXX compiler identification is GNU 13.3.0
+[0.102s] -- Detecting C compiler ABI info
+[0.182s] -- Detecting C compiler ABI info - done
+[0.187s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.188s] -- Detecting C compile features
+[0.188s] -- Detecting C compile features - done
+[0.195s] -- Detecting CXX compiler ABI info
+[0.273s] -- Detecting CXX compiler ABI info - done
+[0.278s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.278s] -- Detecting CXX compile features
+[0.279s] -- Detecting CXX compile features - done
+[0.279s] -- Project name is opencv
+[0.281s] -- Found ament_cmake: 2.5.4 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[0.391s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[0.474s] -- Found rclcpp: 28.1.10 (/opt/ros/jazzy/share/rclcpp/cmake)
+[0.509s] -- Found rosidl_generator_c: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[0.520s] -- Found rosidl_generator_cpp: 4.6.5 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[0.533s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.547s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.605s] -- Found rmw_implementation_cmake: 7.3.2 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[0.608s] -- Found rmw_fastrtps_cpp: 8.4.2 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[0.689s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+[0.704s] -- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") 
+[0.721s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.774s] -- Found rclpy: 7.1.4 (/opt/ros/jazzy/share/rclpy/cmake)
+[0.960s] -- Found ament_lint_auto: 0.17.2 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[1.062s] -- Added test 'flake8' to check Python code syntax and style conventions
+[1.062s] -- Configured 'flake8' exclude dirs and/or files: 
+[1.063s] -- Added test 'lint_cmake' to check CMake code style
+[1.063s] -- Added test 'pep257' to check Python code against some of the docstring style conventions in PEP 257
+[1.065s] -- Added test 'xmllint' to check XML markup files
+[1.066s] -- Configuring done (1.0s)
+[1.069s] -- Generating done (0.0s)
+[1.071s] -- Build files have been written to: /home/karroyabreu/ar4/build/opencv
+[1.080s] Invoked command in '/home/karroyabreu/ar4/build/opencv' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/karroyabreu/ar4/install/pose_gui:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/karroyabreu/ar4/src/opencv -DCMAKE_INSTALL_PREFIX=/home/karroyabreu/ar4/install/opencv
+[1.081s] Invoking command in '/home/karroyabreu/ar4/build/opencv': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/karroyabreu/ar4/install/pose_gui:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/karroyabreu/ar4/build/opencv -- -j22 -l22
+[1.133s] Built target ament_cmake_python_copy_opencv
+[1.271s] running egg_info
+[1.272s] creating opencv.egg-info
+[1.284s] writing opencv.egg-info/PKG-INFO
+[1.284s] writing dependency_links to opencv.egg-info/dependency_links.txt
+[1.284s] writing top-level names to opencv.egg-info/top_level.txt
+[1.284s] writing manifest file 'opencv.egg-info/SOURCES.txt'
+[1.320s] reading manifest file 'opencv.egg-info/SOURCES.txt'
+[1.320s] writing manifest file 'opencv.egg-info/SOURCES.txt'
+[1.342s] Built target ament_cmake_python_build_opencv_egg
+[1.354s] Invoked command in '/home/karroyabreu/ar4/build/opencv' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/karroyabreu/ar4/install/pose_gui:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/karroyabreu/ar4/build/opencv -- -j22 -l22
+[1.363s] Invoking command in '/home/karroyabreu/ar4/build/opencv': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/karroyabreu/ar4/install/pose_gui:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/karroyabreu/ar4/build/opencv
+[1.368s] -- Install configuration: ""
+[1.368s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/opencv/environment/pythonpath.sh
+[1.368s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/opencv/environment/pythonpath.dsv
+[1.369s] -- Installing: /home/karroyabreu/ar4/install/opencv/lib/python3.12/site-packages/opencv-0.0.0-py3.12.egg-info
+[1.369s] -- Installing: /home/karroyabreu/ar4/install/opencv/lib/python3.12/site-packages/opencv-0.0.0-py3.12.egg-info/top_level.txt
+[1.369s] -- Installing: /home/karroyabreu/ar4/install/opencv/lib/python3.12/site-packages/opencv-0.0.0-py3.12.egg-info/SOURCES.txt
+[1.369s] -- Installing: /home/karroyabreu/ar4/install/opencv/lib/python3.12/site-packages/opencv-0.0.0-py3.12.egg-info/dependency_links.txt
+[1.369s] -- Installing: /home/karroyabreu/ar4/install/opencv/lib/python3.12/site-packages/opencv-0.0.0-py3.12.egg-info/PKG-INFO
+[1.369s] -- Installing: /home/karroyabreu/ar4/install/opencv/lib/python3.12/site-packages/opencv
+[1.369s] -- Installing: /home/karroyabreu/ar4/install/opencv/lib/python3.12/site-packages/opencv/load_image.py
+[1.369s] -- Installing: /home/karroyabreu/ar4/install/opencv/lib/python3.12/site-packages/opencv/load_image_from_camera.py
+[1.369s] -- Installing: /home/karroyabreu/ar4/install/opencv/lib/python3.12/site-packages/opencv/__init__.py
+[1.392s] Listing '/home/karroyabreu/ar4/install/opencv/lib/python3.12/site-packages/opencv'...
+[1.392s] Compiling '/home/karroyabreu/ar4/install/opencv/lib/python3.12/site-packages/opencv/__init__.py'...
+[1.392s] Compiling '/home/karroyabreu/ar4/install/opencv/lib/python3.12/site-packages/opencv/load_image.py'...
+[1.392s] Compiling '/home/karroyabreu/ar4/install/opencv/lib/python3.12/site-packages/opencv/load_image_from_camera.py'...
+[1.395s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/opencv/launch
+[1.395s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/opencv/launch/read_image_from_camera.launch.py
+[1.395s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/ament_index/resource_index/package_run_dependencies/opencv
+[1.395s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/ament_index/resource_index/parent_prefix_path/opencv
+[1.396s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/opencv/environment/ament_prefix_path.sh
+[1.396s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/opencv/environment/ament_prefix_path.dsv
+[1.396s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/opencv/environment/path.sh
+[1.396s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/opencv/environment/path.dsv
+[1.396s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/opencv/local_setup.bash
+[1.396s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/opencv/local_setup.sh
+[1.396s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/opencv/local_setup.zsh
+[1.396s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/opencv/local_setup.dsv
+[1.396s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/opencv/package.dsv
+[1.396s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/ament_index/resource_index/packages/opencv
+[1.396s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/opencv/cmake/opencvConfig.cmake
+[1.396s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/opencv/cmake/opencvConfig-version.cmake
+[1.396s] -- Installing: /home/karroyabreu/ar4/install/opencv/share/opencv/package.xml
+[1.398s] Invoked command in '/home/karroyabreu/ar4/build/opencv' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/karroyabreu/ar4/install/pose_gui:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/karroyabreu/ar4/build/opencv

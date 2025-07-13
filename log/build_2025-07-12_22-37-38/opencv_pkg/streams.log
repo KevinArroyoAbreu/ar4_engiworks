@@ -1,0 +1,26 @@
+[0.690s] Invoking command in '/home/karroyabreu/ar4/src/opencv_pkg': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/karroyabreu/ar4/build/opencv_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/opencv_pkg build --build-base /home/karroyabreu/ar4/build/opencv_pkg/build install --record /home/karroyabreu/ar4/build/opencv_pkg/install.log --single-version-externally-managed install_data
+[0.883s] running egg_info
+[0.897s] writing ../../build/opencv_pkg/opencv_pkg.egg-info/PKG-INFO
+[0.897s] writing dependency_links to ../../build/opencv_pkg/opencv_pkg.egg-info/dependency_links.txt
+[0.897s] writing entry points to ../../build/opencv_pkg/opencv_pkg.egg-info/entry_points.txt
+[0.897s] writing requirements to ../../build/opencv_pkg/opencv_pkg.egg-info/requires.txt
+[0.898s] writing top-level names to ../../build/opencv_pkg/opencv_pkg.egg-info/top_level.txt
+[0.926s] reading manifest file '../../build/opencv_pkg/opencv_pkg.egg-info/SOURCES.txt'
+[0.927s] writing manifest file '../../build/opencv_pkg/opencv_pkg.egg-info/SOURCES.txt'
+[0.927s] running build
+[0.927s] running build_py
+[0.927s] copying opencv_pkg/color_filtering.py -> /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg
+[0.927s] running install
+[0.932s] running install_lib
+[0.946s] copying /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg/color_filtering.py -> /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg
+[0.946s] byte-compiling /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg/color_filtering.py to color_filtering.cpython-312.pyc
+[0.947s] running install_data
+[0.947s] running install_egg_info
+[0.962s] removing '/home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg-0.0.0-py3.12.egg-info' (and everything under it)
+[0.962s] Copying ../../build/opencv_pkg/opencv_pkg.egg-info to /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg-0.0.0-py3.12.egg-info
+[0.962s] running install_scripts
+[1.053s] Installing color_filtering script to /home/karroyabreu/ar4/install/opencv_pkg/lib/opencv_pkg
+[1.053s] Installing load_image script to /home/karroyabreu/ar4/install/opencv_pkg/lib/opencv_pkg
+[1.053s] Installing load_image_from_camera script to /home/karroyabreu/ar4/install/opencv_pkg/lib/opencv_pkg
+[1.053s] writing list of installed files to '/home/karroyabreu/ar4/build/opencv_pkg/install.log'
+[1.074s] Invoked command in '/home/karroyabreu/ar4/src/opencv_pkg' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/karroyabreu/ar4/build/opencv_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/opencv_pkg build --build-base /home/karroyabreu/ar4/build/opencv_pkg/build install --record /home/karroyabreu/ar4/build/opencv_pkg/install.log --single-version-externally-managed install_data

@@ -1,0 +1,43 @@
+[0.498s] Invoking command in '/home/karroyabreu/ar4/src/opencv_pkg': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/karroyabreu/ar4/build/opencv_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/opencv_pkg build --build-base /home/karroyabreu/ar4/build/opencv_pkg/build install --record /home/karroyabreu/ar4/build/opencv_pkg/install.log --single-version-externally-managed install_data
+[0.650s] running egg_info
+[0.650s] creating ../../build/opencv_pkg/opencv_pkg.egg-info
+[0.661s] writing ../../build/opencv_pkg/opencv_pkg.egg-info/PKG-INFO
+[0.661s] writing dependency_links to ../../build/opencv_pkg/opencv_pkg.egg-info/dependency_links.txt
+[0.661s] writing entry points to ../../build/opencv_pkg/opencv_pkg.egg-info/entry_points.txt
+[0.661s] writing requirements to ../../build/opencv_pkg/opencv_pkg.egg-info/requires.txt
+[0.661s] writing top-level names to ../../build/opencv_pkg/opencv_pkg.egg-info/top_level.txt
+[0.661s] writing manifest file '../../build/opencv_pkg/opencv_pkg.egg-info/SOURCES.txt'
+[0.683s] reading manifest file '../../build/opencv_pkg/opencv_pkg.egg-info/SOURCES.txt'
+[0.683s] writing manifest file '../../build/opencv_pkg/opencv_pkg.egg-info/SOURCES.txt'
+[0.683s] running build
+[0.683s] running build_py
+[0.683s] creating /home/karroyabreu/ar4/build/opencv_pkg/build
+[0.684s] creating /home/karroyabreu/ar4/build/opencv_pkg/build/lib
+[0.684s] creating /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg
+[0.684s] copying opencv_pkg/load_image.py -> /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg
+[0.684s] copying opencv_pkg/load_image_from_camera.py -> /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg
+[0.684s] copying opencv_pkg/__init__.py -> /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg
+[0.684s] running install
+[0.687s] running install_lib
+[0.698s] creating /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg
+[0.698s] copying /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg/load_image.py -> /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg
+[0.698s] copying /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg/load_image_from_camera.py -> /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg
+[0.698s] copying /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg/__init__.py -> /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg
+[0.698s] byte-compiling /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg/load_image.py to load_image.cpython-312.pyc
+[0.698s] byte-compiling /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg/load_image_from_camera.py to load_image_from_camera.cpython-312.pyc
+[0.699s] byte-compiling /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg/__init__.py to __init__.cpython-312.pyc
+[0.699s] running install_data
+[0.699s] creating /home/karroyabreu/ar4/install/opencv_pkg/share/ament_index
+[0.699s] creating /home/karroyabreu/ar4/install/opencv_pkg/share/ament_index/resource_index
+[0.699s] creating /home/karroyabreu/ar4/install/opencv_pkg/share/ament_index/resource_index/packages
+[0.700s] copying resource/opencv_pkg -> /home/karroyabreu/ar4/install/opencv_pkg/share/ament_index/resource_index/packages
+[0.700s] copying package.xml -> /home/karroyabreu/ar4/install/opencv_pkg/share/opencv_pkg
+[0.700s] creating /home/karroyabreu/ar4/install/opencv_pkg/share/opencv_pkg/launch
+[0.700s] copying launch/read_image_from_camera.launch.py -> /home/karroyabreu/ar4/install/opencv_pkg/share/opencv_pkg/launch
+[0.700s] running install_egg_info
+[0.712s] Copying ../../build/opencv_pkg/opencv_pkg.egg-info to /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg-0.0.0-py3.12.egg-info
+[0.712s] running install_scripts
+[0.788s] Installing load_image script to /home/karroyabreu/ar4/install/opencv_pkg/lib/opencv_pkg
+[0.788s] Installing load_image_from_camera script to /home/karroyabreu/ar4/install/opencv_pkg/lib/opencv_pkg
+[0.789s] writing list of installed files to '/home/karroyabreu/ar4/build/opencv_pkg/install.log'
+[0.806s] Invoked command in '/home/karroyabreu/ar4/src/opencv_pkg' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/karroyabreu/ar4/build/opencv_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/opencv_pkg build --build-base /home/karroyabreu/ar4/build/opencv_pkg/build install --record /home/karroyabreu/ar4/build/opencv_pkg/install.log --single-version-externally-managed install_data

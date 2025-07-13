@@ -1,7 +1,0 @@
-[0.000000] (-) TimerEvent: {}
-[0.000228] (-) JobUnselected: {'identifier': 'annin_ar4_description'}
-[0.000311] (-) JobUnselected: {'identifier': 'annin_ar4_driver'}
-[0.000397] (-) JobUnselected: {'identifier': 'annin_ar4_gazebo'}
-[0.000422] (-) JobUnselected: {'identifier': 'annin_ar4_moveit_config'}
-[0.000443] (-) JobUnselected: {'identifier': 'programs_cpp'}
-[0.000465] (-) EventReactorShutdown: {}
