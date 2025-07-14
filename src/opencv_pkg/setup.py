@@ -30,6 +30,8 @@ setup(
             'color_filtering = opencv_pkg.color_filtering:main',
             'edge_detection = opencv_pkg.edge_detection:main',
             'stream_camera = opencv_pkg.stream_camera:main',
+            'write_camera = opencv_pkg.write_camera:main',
+            'stream_top_position = opencv_pkg.stream_top_position:main',
         ],
     },
 )

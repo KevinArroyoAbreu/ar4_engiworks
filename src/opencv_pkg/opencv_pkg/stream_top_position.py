@@ -21,30 +21,16 @@ class ObjectDetection(Node):
     def camera_callback(self, data):
         try:
             cv_image_mirrored = self.bridge_object.imgmsg_to_cv2(data, desired_encoding='bgr8')
-            cv_image = cv.flip(cv_image_mirrored, -1)
+            cv_image_rotated = cv.flip(cv_image_mirrored, -1)
+            cv_image = cv.rotate(cv_image_rotated, cv.ROTATE_90_CLOCKWISE)
         except CvBridgeError as e:
             print(f"CvBridge Error: {e}")
         
-        #crop for object detection
-        #cropped_img = cv_image[160:410, 180:500]  # [x:x, y:y]
-        
-
-        # Convert to grayscale
-        #gray = cv.cvtColor(cropped_img, cv.COLOR_BGR2GRAY)
-        #cv.imshow("Grayscale Image", gray)
-
-        # Create mask
-        #(block_size, C) (last 2 params)
-        #higher blockSize = wider local neighbor, smoother lighting
-        #lower C = more aggressive thresholding
-        #mask = cv.adaptiveThreshold(gray, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY, 11, 25)
-        #mask = cv.bitwise_not(mask)
-        #cv.imshow("Adaptive Threshold Mask", mask)
 
         #Convert to HSV
         hsv = cv.cvtColor(cv_image, cv.COLOR_BGR2HSV)
 
-        # BKUE color range (adjust these if needed) (Hue, Saturation, Value)
+        # BLUE color range (adjust these if needed) (Hue, Saturation, Value)
         min_hue = np.array([110, 160, 80])
         max_hue = np.array([120, 255, 140])
 
@@ -55,7 +41,7 @@ class ObjectDetection(Node):
         # Find contours
 
         contours, _ = cv.findContours(mask_r, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-        print("contours: ", contours)
+       # print("contours: ", contours)
 
         for cnt in contours:
             cv.polylines(cv_image, [cnt], True, [0, 255, 255], 3)
@@ -73,20 +59,56 @@ class ObjectDetection(Node):
                 cnt = cv.approxPolyDP(cnt, 0.03 * cv.arcLength(cnt, True), True)
                 object_detected.append(cnt)
 
-        print(f"Number of objects detected: {len(object_detected)}")
+       # print(f"Number of objects detected: {len(object_detected)}")
         #print(object_detected)
+
+
+        #Pixel to mm conversion 
+        x_pxl_center = 238
+        y_pxl_center = 307.5# not needed (y0 is not on the feed)
+        pxl_mm_conversion = 18.5 / 20  # 18 pixels corresponds to 20 mm
+
+        # Using positions read using rviz and pose_gui node
+        x0 = 0
+        y0 = 47.6
+        calib_y = 20#an offset to correct y position
+        # ADJUST THIS: this is fixed (due to 2d camera being used)
+        z0 = 10 #using 20mm cubes
+
 
         for cnt in object_detected:
             rect = cv.minAreaRect(cnt)
             (x_center,y_center), (width, height), orientation = rect
+            #print('width: ', width, ' height: ', height)
             box = cv.boxPoints(rect)
             box = np.int0(box)
             cv.drawContours(cv_image, [box], 0, (255, 0, 0), 1)
-            cv.putText(cv_image, f"X: {x_center:.2f}, Y: {y_center:.2f}", (int(x_center), int(y_center)), cv.FONT_HERSHEY_SIMPLEX, .5, (0, 255, 0), 1)
-            cv.circle(cv_image, (int(x_center), int(y_center)), 1, (255, 0, 0), -1)
 
-        cv.imshow("Feed", cv_image)
-        #cv.imshow("Original Image", cv_image)
+
+         #condition right of the imgage
+        if (x_center > x_pxl_center):
+            y =   y0 + (y_center)/pxl_mm_conversion + calib_y
+            x = x0+(-x_pxl_center + x_center)/pxl_mm_conversion
+        
+        #condition left of the imgage
+        elif (x_center < x_pxl_center):
+            y =  y0 + (y_center)/pxl_mm_conversion + calib_y
+            x = x0-(x_pxl_center - x_center)/pxl_mm_conversion 
+
+        elif (x_center == x_pxl_center) and (y_center == y_pxl_center):
+            x= x0
+            y= y0
+        
+        else:
+            y = 20
+            x = 0
+            print("Object not detected in the expected range, setting default coordinates.")
+
+
+        cv.putText(cv_image, "x: {}".format(round(x, 1)) + " y: {}".format(round(y,1)), 
+                       (int(x_center), int(y_center)), cv.FONT_HERSHEY_PLAIN, 1, (0,0,255),1)
+        cv.circle(cv_image, (int(x_center), int(y_center)), 1, (255, 0, 0), -1)
+        cv.imshow("Obj Detection - Real World Coordinates", cv_image)
         cv.waitKey(1)
 
 
