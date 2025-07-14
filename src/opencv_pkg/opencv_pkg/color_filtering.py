@@ -28,9 +28,9 @@ class ColorFilter(Node):
         # Convert to HSV (OpenCV uses BGR by default)
         hsv = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
 
-        # RED color range (adjust these if needed)
-        min_hue = np.array([180, 40, 40])
-        max_hue = np.array([210, 80, 80])
+        # RED color range (adjust these if needed) (Hue, Saturation, Value)
+        min_hue = np.array([0, 120, 120])
+        max_hue = np.array([210, 240, 240])
 
         # Create mask
         mask_r = cv2.inRange(hsv, min_hue, max_hue)

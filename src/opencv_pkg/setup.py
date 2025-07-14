@@ -28,6 +28,8 @@ setup(
             'load_image_from_camera = opencv_pkg.load_image_from_camera:main',
             'load_image = opencv_pkg.load_image_from_camera:main',
             'color_filtering = opencv_pkg.color_filtering:main',
+            'edge_detection = opencv_pkg.edge_detection:main',
+            'stream_camera = opencv_pkg.stream_camera:main',
         ],
     },
 )

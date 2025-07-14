@@ -12,7 +12,7 @@ def mouse_callback(event, x, y, flags, param):
 
 def main():
     global hsv_image
-    cap = cv2.VideoCapture(0)  # Change 0 if you have multiple cameras
+    cap = cv2.VideoCapture(4)  # Change 0 if you have multiple cameras
     if not cap.isOpened():
         print("Cannot open camera")
         return
