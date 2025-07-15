@@ -83,7 +83,7 @@ class ObjectDetection(Node):
             box = np.int0(box)
             cv.drawContours(cv_image, [box], 0, (255, 0, 0), 1)
             cv.putText(cv_image, f"X: {x_center:.2f}, Y: {y_center:.2f}", (int(x_center), int(y_center)), cv.FONT_HERSHEY_SIMPLEX, .5, (0, 255, 0), 1)
-            cv.circle(cv_image, (int(x_center), int(y_center)), 1, (255, 0, 0), -1)
+            cv.circle(cv_image, (int(x_center), int(y_center)), 2, (0, 0, 255), -1)
 
         cv.imshow("Feed", cv_image)
         #cv.imshow("Original Image", cv_image)

@@ -1,0 +1,11 @@
+[01m[K/home/karroyabreu/ar4/src/programs_cpp/src/pickObject.cpp:[m[K In member function ‘[01m[Kvoid ProgramsNode::[01;32m[Krun_motion_sequence[m[K()[m[K’:
+[01m[K/home/karroyabreu/ar4/src/programs_cpp/src/pickObject.cpp:126:60:[m[K [01;35m[Kwarning: [m[K‘[01m[Kdouble moveit::planning_interface::MoveGroupInterface::[01;32m[KcomputeCartesianPath[m[K(const std::vector<geometry_msgs::msg::Pose_<std::allocator<void> > >&, double, double, moveit_msgs::msg::RobotTrajectory&, bool, moveit_msgs::msg::MoveItErrorCodes*)[m[K’ is deprecated: Drop jump_threshold [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wdeprecated-declarations-Wdeprecated-declarations]8;;[m[K]
+  126 |         double fraction = [01;35m[Kmove_group_->computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory)[m[K;
+      |                           [01;35m[K~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+In file included from [01m[K/home/karroyabreu/ar4/src/programs_cpp/src/pickObject.cpp:3[m[K:
+[01m[K/opt/ros/jazzy/include/moveit_ros_planning_interface/moveit/move_group_interface/move_group_interface.hpp:765:3:[m[K [01;36m[Knote: [m[Kdeclared here
+  765 |   [01;36m[KcomputeCartesianPath[m[K(const std::vector<geometry_msgs::msg::Pose>& waypoints, double eef_step,
+      |   [01;36m[K^~~~~~~~~~~~~~~~~~~~[m[K
+[01m[K/home/karroyabreu/ar4/src/programs_cpp/src/pickObject.cpp:92:30:[m[K [01;35m[Kwarning: [m[Kvariable ‘[01m[Kpose1[m[K’ set but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-but-set-variable-Wunused-but-set-variable]8;;[m[K]
+   92 |     geometry_msgs::msg::Pose [01;35m[Kpose1[m[K = create_pose_from_xyz_yaw(0.0, 0.0, 0.3, 0.0);
+      |                              [01;35m[K^~~~~[m[K

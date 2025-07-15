@@ -1,0 +1,24 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${workspaceFolder}/.vscode/browse.vc.db",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/karroyabreu/ar4/install/annin_ar4_driver/include/**",
+        "/opt/ros/jazzy/include/**",
+        "/home/karroyabreu/ar4/src/ar4_ros_driver/annin_ar4_driver/include/**",
+        "/home/karroyabreu/ar4/src/opencv_pkg/include/**",
+        "/home/karroyabreu/ar4/src/programs_cpp/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ros2",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++17"
+    }
+  ],
+  "version": 4
+}

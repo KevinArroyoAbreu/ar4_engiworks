@@ -1,0 +1,71 @@
+[0.585s] Invoking command in '/home/karroyabreu/ar4/src/opencv_pkg': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/karroyabreu/ar4/build/opencv_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages:/home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages:/home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages:/home/karroyabreu/ar4/install/pose_gui/lib/python3.12/site-packages:/home/karroyabreu/ar4/install/opencv/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/opencv_pkg build --build-base /home/karroyabreu/ar4/build/opencv_pkg/build install --record /home/karroyabreu/ar4/build/opencv_pkg/install.log --single-version-externally-managed install_data
+[0.770s] running egg_info
+[0.770s] creating ../../build/opencv_pkg/opencv_pkg.egg-info
+[0.783s] writing ../../build/opencv_pkg/opencv_pkg.egg-info/PKG-INFO
+[0.783s] writing dependency_links to ../../build/opencv_pkg/opencv_pkg.egg-info/dependency_links.txt
+[0.784s] writing entry points to ../../build/opencv_pkg/opencv_pkg.egg-info/entry_points.txt
+[0.784s] writing requirements to ../../build/opencv_pkg/opencv_pkg.egg-info/requires.txt
+[0.784s] writing top-level names to ../../build/opencv_pkg/opencv_pkg.egg-info/top_level.txt
+[0.785s] writing manifest file '../../build/opencv_pkg/opencv_pkg.egg-info/SOURCES.txt'
+[0.809s] reading manifest file '../../build/opencv_pkg/opencv_pkg.egg-info/SOURCES.txt'
+[0.810s] writing manifest file '../../build/opencv_pkg/opencv_pkg.egg-info/SOURCES.txt'
+[0.810s] running build
+[0.810s] running build_py
+[0.811s] creating /home/karroyabreu/ar4/build/opencv_pkg/build
+[0.811s] creating /home/karroyabreu/ar4/build/opencv_pkg/build/lib
+[0.811s] creating /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg
+[0.811s] copying opencv_pkg/write_camera.py -> /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg
+[0.811s] copying opencv_pkg/hsv_on_click.py -> /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg
+[0.811s] copying opencv_pkg/edge_detection.py -> /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg
+[0.812s] copying opencv_pkg/stream_camera.py -> /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg
+[0.812s] copying opencv_pkg/load_image.py -> /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg
+[0.812s] copying opencv_pkg/load_image_from_camera.py -> /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg
+[0.812s] copying opencv_pkg/stream_top_position.py -> /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg
+[0.812s] copying opencv_pkg/get_position_server.py -> /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg
+[0.812s] copying opencv_pkg/color_filtering.py -> /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg
+[0.812s] copying opencv_pkg/__init__.py -> /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg
+[0.812s] running install
+[0.814s] running install_lib
+[0.827s] creating /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg
+[0.827s] copying /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg/write_camera.py -> /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg
+[0.827s] copying /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg/hsv_on_click.py -> /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg
+[0.827s] copying /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg/edge_detection.py -> /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg
+[0.827s] copying /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg/stream_camera.py -> /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg
+[0.827s] copying /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg/load_image.py -> /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg
+[0.827s] copying /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg/load_image_from_camera.py -> /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg
+[0.827s] copying /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg/stream_top_position.py -> /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg
+[0.827s] copying /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg/get_position_server.py -> /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg
+[0.827s] copying /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg/color_filtering.py -> /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg
+[0.827s] copying /home/karroyabreu/ar4/build/opencv_pkg/build/lib/opencv_pkg/__init__.py -> /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg
+[0.828s] byte-compiling /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg/write_camera.py to write_camera.cpython-312.pyc
+[0.828s] byte-compiling /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg/hsv_on_click.py to hsv_on_click.cpython-312.pyc
+[0.828s] byte-compiling /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg/edge_detection.py to edge_detection.cpython-312.pyc
+[0.829s] byte-compiling /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg/stream_camera.py to stream_camera.cpython-312.pyc
+[0.830s] byte-compiling /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg/load_image.py to load_image.cpython-312.pyc
+[0.830s] byte-compiling /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg/load_image_from_camera.py to load_image_from_camera.cpython-312.pyc
+[0.830s] byte-compiling /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg/stream_top_position.py to stream_top_position.cpython-312.pyc
+[0.831s] byte-compiling /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg/get_position_server.py to get_position_server.cpython-312.pyc
+[0.832s] byte-compiling /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg/color_filtering.py to color_filtering.cpython-312.pyc
+[0.833s] byte-compiling /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg/__init__.py to __init__.cpython-312.pyc
+[0.833s] running install_data
+[0.833s] creating /home/karroyabreu/ar4/install/opencv_pkg/share/ament_index
+[0.833s] creating /home/karroyabreu/ar4/install/opencv_pkg/share/ament_index/resource_index
+[0.833s] creating /home/karroyabreu/ar4/install/opencv_pkg/share/ament_index/resource_index/packages
+[0.833s] copying resource/opencv_pkg -> /home/karroyabreu/ar4/install/opencv_pkg/share/ament_index/resource_index/packages
+[0.833s] copying package.xml -> /home/karroyabreu/ar4/install/opencv_pkg/share/opencv_pkg
+[0.833s] creating /home/karroyabreu/ar4/install/opencv_pkg/share/opencv_pkg/launch
+[0.834s] copying launch/color_filter.launch.py -> /home/karroyabreu/ar4/install/opencv_pkg/share/opencv_pkg/launch
+[0.834s] copying launch/read_image_from_camera.launch.py -> /home/karroyabreu/ar4/install/opencv_pkg/share/opencv_pkg/launch
+[0.834s] running install_egg_info
+[0.853s] Copying ../../build/opencv_pkg/opencv_pkg.egg-info to /home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages/opencv_pkg-0.0.0-py3.12.egg-info
+[0.853s] running install_scripts
+[0.938s] Installing color_filtering script to /home/karroyabreu/ar4/install/opencv_pkg/lib/opencv_pkg
+[0.938s] Installing edge_detection script to /home/karroyabreu/ar4/install/opencv_pkg/lib/opencv_pkg
+[0.938s] Installing get_position_server script to /home/karroyabreu/ar4/install/opencv_pkg/lib/opencv_pkg
+[0.938s] Installing load_image script to /home/karroyabreu/ar4/install/opencv_pkg/lib/opencv_pkg
+[0.938s] Installing load_image_from_camera script to /home/karroyabreu/ar4/install/opencv_pkg/lib/opencv_pkg
+[0.939s] Installing stream_camera script to /home/karroyabreu/ar4/install/opencv_pkg/lib/opencv_pkg
+[0.939s] Installing stream_top_position script to /home/karroyabreu/ar4/install/opencv_pkg/lib/opencv_pkg
+[0.939s] Installing write_camera script to /home/karroyabreu/ar4/install/opencv_pkg/lib/opencv_pkg
+[0.939s] writing list of installed files to '/home/karroyabreu/ar4/build/opencv_pkg/install.log'
+[0.962s] Invoked command in '/home/karroyabreu/ar4/src/opencv_pkg' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/karroyabreu/ar4/build/opencv_pkg/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages:/home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages:/home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages:/home/karroyabreu/ar4/install/pose_gui/lib/python3.12/site-packages:/home/karroyabreu/ar4/install/opencv/lib/python3.12/site-packages:/opt/ros/jazzy/lib/python3.12/site-packages /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/opencv_pkg build --build-base /home/karroyabreu/ar4/build/opencv_pkg/build install --record /home/karroyabreu/ar4/build/opencv_pkg/install.log --single-version-externally-managed install_data

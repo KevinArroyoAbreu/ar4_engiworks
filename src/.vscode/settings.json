@@ -1,0 +1,16 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages",
+        "/home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages",
+        "/home/karroyabreu/ar4/install/pose_gui/lib/python3.12/site-packages",
+        "/home/karroyabreu/ar4/install/opencv/lib/python3.12/site-packages",
+        "/opt/ros/jazzy/lib/python3.12/site-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/karroyabreu/ar4/install/opencv_pkg/lib/python3.12/site-packages",
+        "/home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages",
+        "/home/karroyabreu/ar4/install/pose_gui/lib/python3.12/site-packages",
+        "/home/karroyabreu/ar4/install/opencv/lib/python3.12/site-packages",
+        "/opt/ros/jazzy/lib/python3.12/site-packages"
+    ]
+}

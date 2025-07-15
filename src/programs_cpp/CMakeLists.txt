@@ -8,31 +8,43 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-
-
 find_package(moveit_ros_planning_interface REQUIRED)
+find_package(position_tracker REQUIRED)
 
+
+# Executable 1
 add_executable(prog1 src/program1.cpp)
 ament_target_dependencies(prog1
   rclcpp
   moveit_ros_planning_interface
 )
 
-install(TARGETS prog1
+# Executable 2
+add_executable(pickObject src/pickObject.cpp)
+ament_target_dependencies(pickObject
+  rclcpp
+  moveit_ros_planning_interface
+)
+
+# Install targets
+install(TARGETS prog1 pickObject
   DESTINATION lib/${PROJECT_NAME}
+)
+
+ament_target_dependencies(pickObject
+  rclcpp
+  moveit_ros_planning_interface
+  position_tracker
 )
 
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
 
-  # the following line skips the linter which checks for copyrights
-  # comment the line when a copyright and license is added to all source files
+  # Skip some linters until copyrights/licenses are added
   set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # comment the line when this package is in a git repo and when
-  # a copyright and license is added to all source files
   set(ament_cmake_cpplint_FOUND TRUE)
+  
   ament_lint_auto_find_test_dependencies()
 endif()
 

@@ -32,6 +32,7 @@ setup(
             'stream_camera = opencv_pkg.stream_camera:main',
             'write_camera = opencv_pkg.write_camera:main',
             'stream_top_position = opencv_pkg.stream_top_position:main',
+            'get_position_server = opencv_pkg.get_position_server:main',
         ],
     },
 )

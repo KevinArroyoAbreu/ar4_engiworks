@@ -1,0 +1,152 @@
+[0.014s] Invoking command in '/home/karroyabreu/ar4/build/position_tracker': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/karroyabreu/ar4/install/opencv_pkg:/home/karroyabreu/ar4/install/pose_gui:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/karroyabreu/ar4/build/position_tracker -- -j22 -l22
+[0.055s] [  2%] Built target position_tracker__rosidl_generator_type_description
+[0.067s] [  2%] Built target ament_cmake_python_copy_position_tracker
+[0.074s] [ 20%] Built target position_tracker__cpp
+[0.074s] [ 20%] Built target position_tracker__rosidl_generator_c
+[0.091s] [ 44%] Built target position_tracker__rosidl_typesupport_c
+[0.091s] [ 44%] Built target position_tracker__rosidl_typesupport_introspection_c
+[0.091s] [ 47%] Built target position_tracker__rosidl_typesupport_fastrtps_c
+[0.093s] [ 55%] Built target position_tracker__rosidl_typesupport_introspection_cpp
+[0.109s] [ 64%] Built target position_tracker__rosidl_typesupport_cpp
+[0.110s] [ 73%] Built target position_tracker__rosidl_typesupport_fastrtps_cpp
+[0.126s] [ 73%] Built target position_tracker
+[0.147s] [ 76%] Built target position_tracker__py
+[0.168s] [ 82%] Built target position_tracker__rosidl_generator_py
+[0.186s] [ 94%] Built target position_tracker_s__rosidl_typesupport_c
+[0.186s] [ 94%] Built target position_tracker_s__rosidl_typesupport_introspection_c
+[0.186s] [100%] Built target position_tracker_s__rosidl_typesupport_fastrtps_c
+[0.237s] running egg_info
+[0.251s] writing position_tracker.egg-info/PKG-INFO
+[0.251s] writing dependency_links to position_tracker.egg-info/dependency_links.txt
+[0.251s] writing top-level names to position_tracker.egg-info/top_level.txt
+[0.291s] reading manifest file 'position_tracker.egg-info/SOURCES.txt'
+[0.291s] writing manifest file 'position_tracker.egg-info/SOURCES.txt'
+[0.315s] [100%] Built target ament_cmake_python_build_position_tracker_egg
+[0.325s] Invoked command in '/home/karroyabreu/ar4/build/position_tracker' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/karroyabreu/ar4/install/opencv_pkg:/home/karroyabreu/ar4/install/pose_gui:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/karroyabreu/ar4/build/position_tracker -- -j22 -l22
+[0.326s] Invoking command in '/home/karroyabreu/ar4/build/position_tracker': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/karroyabreu/ar4/install/opencv_pkg:/home/karroyabreu/ar4/install/pose_gui:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/karroyabreu/ar4/build/position_tracker
+[0.333s] -- Install configuration: ""
+[0.333s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/ament_index/resource_index/rosidl_interfaces/position_tracker
+[0.333s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/srv/GetPosition.json
+[0.333s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker
+[0.333s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv
+[0.333s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail
+[0.333s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail/get_position__struct.h
+[0.333s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail/get_position__functions.h
+[0.333s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail/get_position__type_support.c
+[0.333s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail/get_position__functions.c
+[0.333s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail/get_position__description.c
+[0.333s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail/get_position__type_support.h
+[0.333s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/get_position.h
+[0.333s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/msg
+[0.333s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/msg/rosidl_generator_c__visibility_control.h
+[0.333s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/environment/library_path.sh
+[0.334s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/environment/library_path.dsv
+[0.334s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/libposition_tracker__rosidl_generator_c.so
+[0.334s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker
+[0.334s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv
+[0.334s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail
+[0.334s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail/get_position__rosidl_typesupport_fastrtps_c.h
+[0.334s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/msg
+[0.334s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[0.334s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/libposition_tracker__rosidl_typesupport_fastrtps_c.so
+[0.334s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker
+[0.334s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv
+[0.335s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/get_position.hpp
+[0.335s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail
+[0.335s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail/get_position__builder.hpp
+[0.335s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail/get_position__type_support.hpp
+[0.335s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail/get_position__struct.hpp
+[0.335s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail/get_position__traits.hpp
+[0.335s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/msg
+[0.335s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/msg/rosidl_generator_cpp__visibility_control.hpp
+[0.335s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker
+[0.335s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail/dds_fastrtps
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail/get_position__rosidl_typesupport_fastrtps_cpp.hpp
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/msg
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/libposition_tracker__rosidl_typesupport_fastrtps_cpp.so
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail/get_position__rosidl_typesupport_introspection_c.h
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail/get_position__type_support.c
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/msg
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/libposition_tracker__rosidl_typesupport_introspection_c.so
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/libposition_tracker__rosidl_typesupport_c.so
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail/get_position__rosidl_typesupport_introspection_cpp.hpp
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/include/position_tracker/position_tracker/srv/detail/get_position__type_support.cpp
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/libposition_tracker__rosidl_typesupport_introspection_cpp.so
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/libposition_tracker__rosidl_typesupport_cpp.so
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/environment/pythonpath.sh
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/environment/pythonpath.dsv
+[0.336s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker-0.0.0-py3.12.egg-info
+[0.337s] -- Installing: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker-0.0.0-py3.12.egg-info/top_level.txt
+[0.337s] -- Installing: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker-0.0.0-py3.12.egg-info/SOURCES.txt
+[0.337s] -- Installing: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker-0.0.0-py3.12.egg-info/dependency_links.txt
+[0.337s] -- Installing: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker-0.0.0-py3.12.egg-info/PKG-INFO
+[0.337s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker
+[0.337s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker/_position_tracker_s.ep.rosidl_typesupport_c.c
+[0.337s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker/srv
+[0.337s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker/srv/_get_position_s.c
+[0.337s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker/srv/__init__.py
+[0.337s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker/srv/_get_position.py
+[0.337s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker/position_tracker_s__rosidl_typesupport_c.so
+[0.337s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker/position_tracker_s__rosidl_typesupport_introspection_c.so
+[0.337s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker/_position_tracker_s.ep.rosidl_typesupport_introspection_c.c
+[0.337s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker/_position_tracker_s.ep.rosidl_typesupport_fastrtps_c.c
+[0.337s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker/position_tracker_s__rosidl_typesupport_fastrtps_c.so
+[0.337s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker/__init__.py
+[0.360s] Listing '/home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker'...
+[0.361s] Listing '/home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker/srv'...
+[0.365s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker/position_tracker_s__rosidl_typesupport_fastrtps_c.so
+[0.365s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker/position_tracker_s__rosidl_typesupport_introspection_c.so
+[0.365s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/python3.12/site-packages/position_tracker/position_tracker_s__rosidl_typesupport_c.so
+[0.366s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/lib/libposition_tracker__rosidl_generator_py.so
+[0.366s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/srv/GetPosition.idl
+[0.377s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/srv/GetPosition.srv
+[0.377s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/ament_index/resource_index/package_run_dependencies/position_tracker
+[0.377s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/ament_index/resource_index/parent_prefix_path/position_tracker
+[0.377s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/environment/ament_prefix_path.sh
+[0.377s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/environment/ament_prefix_path.dsv
+[0.377s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/environment/path.sh
+[0.377s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/environment/path.dsv
+[0.377s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/local_setup.bash
+[0.377s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/local_setup.sh
+[0.377s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/local_setup.zsh
+[0.377s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/local_setup.dsv
+[0.377s] -- Installing: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/package.dsv
+[0.377s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/ament_index/resource_index/packages/position_tracker
+[0.377s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/export_position_tracker__rosidl_generator_cExport.cmake
+[0.377s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/export_position_tracker__rosidl_generator_cExport-noconfig.cmake
+[0.378s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/export_position_tracker__rosidl_typesupport_fastrtps_cExport.cmake
+[0.378s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/export_position_tracker__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[0.378s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/export_position_tracker__rosidl_generator_cppExport.cmake
+[0.378s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/export_position_tracker__rosidl_typesupport_fastrtps_cppExport.cmake
+[0.378s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/export_position_tracker__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[0.378s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/position_tracker__rosidl_typesupport_introspection_cExport.cmake
+[0.378s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/position_tracker__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[0.379s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/position_tracker__rosidl_typesupport_cExport.cmake
+[0.379s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/position_tracker__rosidl_typesupport_cExport-noconfig.cmake
+[0.379s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/position_tracker__rosidl_typesupport_introspection_cppExport.cmake
+[0.379s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/position_tracker__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[0.379s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/position_tracker__rosidl_typesupport_cppExport.cmake
+[0.380s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/position_tracker__rosidl_typesupport_cppExport-noconfig.cmake
+[0.380s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/export_position_tracker__rosidl_generator_pyExport.cmake
+[0.380s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/export_position_tracker__rosidl_generator_pyExport-noconfig.cmake
+[0.380s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/rosidl_cmake-extras.cmake
+[0.380s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/ament_cmake_export_dependencies-extras.cmake
+[0.380s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/ament_cmake_export_include_directories-extras.cmake
+[0.380s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/ament_cmake_export_libraries-extras.cmake
+[0.380s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/ament_cmake_export_targets-extras.cmake
+[0.380s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[0.380s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[0.380s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/position_trackerConfig.cmake
+[0.380s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/cmake/position_trackerConfig-version.cmake
+[0.380s] -- Up-to-date: /home/karroyabreu/ar4/install/position_tracker/share/position_tracker/package.xml
+[0.383s] Invoked command in '/home/karroyabreu/ar4/build/position_tracker' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/karroyabreu/ar4/install/opencv_pkg:/home/karroyabreu/ar4/install/pose_gui:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/karroyabreu/ar4/build/position_tracker

@@ -1,22 +1,25 @@
 {
-  "configurations": [
-    {
-      "browse": {
-        "databaseFilename": "${default}",
-        "limitSymbolsToIncludedHeaders": false
-      },
-      "includePath": [
-        "/home/karroyabreu/ar4/install/annin_ar4_driver/include/**",
-        "/opt/ros/jazzy/include/**",
-        "/home/karroyabreu/ar4/src/ar4_ros_driver/annin_ar4_driver/include/**",
-        "/usr/include/**"
-      ],
-      "name": "ROS",
-      "intelliSenseMode": "gcc-x64",
-      "compilerPath": "/usr/bin/gcc",
-      "cStandard": "gnu11",
-      "cppStandard": "c++14"
-    }
-  ],
-  "version": 4
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "${default}",
+                "limitSymbolsToIncludedHeaders": false
+            },
+            "includePath": [
+                "/home/karroyabreu/ar4/install/annin_ar4_driver/include/**",
+                "/opt/ros/jazzy/include/**",
+                "/home/karroyabreu/ar4/src/ar4_ros_driver/annin_ar4_driver/include/**",
+                "/usr/include/**",
+                "/opt/ros/jazzy/include/moveit_ros_planning_interface",
+                "${workspaceFolder}",
+                "${workspaceFolder}/build/position_tracker/rosidl_generator_cpp"
+            ],
+            "name": "ROS",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu11",
+            "cppStandard": "c++14"
+        }
+    ],
+    "version": 4
 }
