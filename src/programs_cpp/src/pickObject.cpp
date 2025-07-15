@@ -13,8 +13,7 @@ using GetPosition = position_tracker::srv::GetPosition;
 
 enum class MotionType { Joint, Cartesian };
 
-struct PoseStep
-{
+struct PoseStep {
   geometry_msgs::msg::Pose pose;
   double velocity_scaling;
   double acceleration_scaling;
@@ -30,44 +29,32 @@ struct PoseStep
 
 geometry_msgs::msg::Pose create_pose_from_xyz_yaw(double x, double y, double z, double yaw)
 {
-    // tf2::Quaternion q;
-    // q.setRPY(0, 0, yaw);  // roll=0, pitch=0, yaw=yaw
-    // q.normalize();
-    geometry_msgs::msg::Pose pose;
-    pose.position.x = x / 1000.0;
-    pose.position.y = y / 1000.0;
-    pose.position.z = z / 1000.0;
+  geometry_msgs::msg::Pose pose;
+  pose.position.x = x / 1000.0;
+  pose.position.y = y / 1000.0;
+  pose.position.z = z / 1000.0;
 
-    double corrected_yaw = yaw - M_PI_2 ;//yam - M_PI_2
-    double half_yaw = corrected_yaw / 2.0;
+  double corrected_yaw = yaw - M_PI_2;
+  double pitch_angle = M_PI;
+  double roll_angle = 0;
 
-    double pitch_angle = M_PI;
-    double roll_angle = 0;
+  tf2::Quaternion q_yaw;
+  q_yaw.setRPY(0, 0, corrected_yaw);
 
-    tf2::Quaternion q_yaw;
-    q_yaw.setRPY(0, 0, corrected_yaw);
+  tf2::Quaternion q_pitch;
+  q_pitch.setRPY(0, pitch_angle, 0);
 
-    tf2::Quaternion q_pitch;
-    q_pitch.setRPY(0, pitch_angle, 0);
+  tf2::Quaternion q_roll;
+  q_roll.setRPY(roll_angle, 0, 0);
 
-    tf2::Quaternion q_roll;
-    q_roll.setRPY(roll_angle, 0, 0);  // your roll (90 degrees)
+  tf2::Quaternion q_final = q_yaw * q_pitch * q_roll;
+  q_final.normalize();
 
-    // Multiply quaternions in order: yaw * pitch * roll
-    tf2::Quaternion q_final = q_yaw * q_pitch * q_roll;
-
-    q_final.normalize();  // normalize just in case
-
-  //  pose.orientation.x = 0.0;
-  //  pose.orientation.y = 1.0;
-  //  pose.orientation.z = sin(half_yaw);
-  //  pose.orientation.w = cos(half_yaw);
-
-      pose.orientation.x = q_final.x();
-      pose.orientation.y = q_final.y();
-      pose.orientation.z = q_final.z();
-      pose.orientation.w = q_final.w();
-    return pose;
+  pose.orientation.x = q_final.x();
+  pose.orientation.y = q_final.y();
+  pose.orientation.z = q_final.z();
+  pose.orientation.w = q_final.w();
+  return pose;
 }
 
 class ProgramsNode : public rclcpp::Node
@@ -82,8 +69,15 @@ public:
   void init_move_group()
   {
     move_group_ = std::make_unique<moveit::planning_interface::MoveGroupInterface>(shared_from_this(), "ar_manipulator");
-    move_group_->setMaxVelocityScalingFactor(0.5);
-    move_group_->setMaxAccelerationScalingFactor(0.5);
+    move_group_->setMaxVelocityScalingFactor(1.0);
+    move_group_->setMaxAccelerationScalingFactor(1.0);
+  }
+
+  void init_gripper_group()
+  {
+    gripper_group_ = std::make_unique<moveit::planning_interface::MoveGroupInterface>(shared_from_this(), "ar_gripper");
+    gripper_group_->setMaxVelocityScalingFactor(1.0);
+    gripper_group_->setMaxAccelerationScalingFactor(1.0);
   }
 
   void run_motion_sequence()
@@ -107,23 +101,24 @@ public:
     } else {
       RCLCPP_ERROR(get_logger(), "Failed to call get_position service.");
       return;
+    } 
+
+    // ➤ Open the gripper
+    gripper_group_->setNamedTarget("open");
+    if (gripper_group_->move() != moveit::core::MoveItErrorCode::SUCCESS) {
+      RCLCPP_ERROR(get_logger(), "Failed to open gripper.");
+      return;
     }
+    RCLCPP_INFO(get_logger(), "Gripper opened.");
 
-    // Dummy pose1 (replace with real one if needed)
-    geometry_msgs::msg::Pose pose1 = create_pose_from_xyz_yaw(0.0, 0.0, 0.3, 0.0);
-
+    //Pose to reach the object
     RCLCPP_INFO(get_logger(), "Adding pose to sequence: x=%.3f, y=%.3f, z=%.3f, quat=[%.3f, %.3f, %.3f, %.3f]",
-            object_pose.position.x,
-            object_pose.position.y,
-            object_pose.position.z,
-            object_pose.orientation.x,
-            object_pose.orientation.y,
-            object_pose.orientation.z,
-            object_pose.orientation.w);
+                object_pose.position.x, object_pose.position.y, object_pose.position.z,
+                object_pose.orientation.x, object_pose.orientation.y,
+                object_pose.orientation.z, object_pose.orientation.w);
 
     std::vector<PoseStep> sequence = {
-      //PoseStep(pose1, 0.5, 0.3, false, 1000, MotionType::Joint),
-      PoseStep(object_pose, 0.5, 0.3, false, 1000, MotionType::Joint),
+     PoseStep(object_pose, 0.5, 0.3, false, 1000, MotionType::Joint),
     };
 
     for (size_t i = 0; i < sequence.size(); ++i)
@@ -171,11 +166,19 @@ public:
       move_group_->clearPoseTargets();
       rclcpp::sleep_for(std::chrono::milliseconds(step.wait_time_ms));
     }
-  }
 
+    // ➤ Close the gripper after reaching the pose
+    gripper_group_->setNamedTarget("closed");
+    if (gripper_group_->move() != moveit::core::MoveItErrorCode::SUCCESS) {
+      RCLCPP_ERROR(get_logger(), "Failed to close gripper.");
+      return;
+    }
+    RCLCPP_INFO(get_logger(), "Gripper closed.");
+  }
 private:
   rclcpp::Client<GetPosition>::SharedPtr client_;
   std::unique_ptr<moveit::planning_interface::MoveGroupInterface> move_group_;
+  std::unique_ptr<moveit::planning_interface::MoveGroupInterface> gripper_group_;
 };
 
 int main(int argc, char** argv)
@@ -183,6 +186,7 @@ int main(int argc, char** argv)
   rclcpp::init(argc, argv);
   auto node = std::make_shared<ProgramsNode>();
   node->init_move_group();
+  node->init_gripper_group();  // ✅ Initialize the gripper MoveGroup
   node->run_motion_sequence();
   rclcpp::spin(node);
   rclcpp::shutdown();
