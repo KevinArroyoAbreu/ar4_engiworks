@@ -1,0 +1,22 @@
+running develop
+running egg_info
+creating pose_gui.egg-info
+writing pose_gui.egg-info/PKG-INFO
+writing dependency_links to pose_gui.egg-info/dependency_links.txt
+writing entry points to pose_gui.egg-info/entry_points.txt
+writing requirements to pose_gui.egg-info/requires.txt
+writing top-level names to pose_gui.egg-info/top_level.txt
+writing manifest file 'pose_gui.egg-info/SOURCES.txt'
+reading manifest file 'pose_gui.egg-info/SOURCES.txt'
+writing manifest file 'pose_gui.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/karroyabreu/ar4/install/pose_gui/lib/python3.12/site-packages/pose-gui.egg-link (link to .)
+Installing pose_gui script to /home/karroyabreu/ar4/install/pose_gui/lib/pose_gui
+
+Installed /home/karroyabreu/ar4/build/pose_gui
+running symlink_data
+creating /home/karroyabreu/ar4/install/pose_gui/share/ament_index
+creating /home/karroyabreu/ar4/install/pose_gui/share/ament_index/resource_index
+creating /home/karroyabreu/ar4/install/pose_gui/share/ament_index/resource_index/packages
+symbolically linking /home/karroyabreu/ar4/build/pose_gui/resource/pose_gui -> /home/karroyabreu/ar4/install/pose_gui/share/ament_index/resource_index/packages
+symbolically linking /home/karroyabreu/ar4/build/pose_gui/package.xml -> /home/karroyabreu/ar4/install/pose_gui/share/pose_gui

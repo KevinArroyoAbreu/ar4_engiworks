@@ -1,1 +1,0 @@
-Invoking command in '/home/karroyabreu/ar4/build/programs_cpp': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/karroyabreu/ar4/install/opencv_pkg:/home/karroyabreu/ar4/install/pose_gui:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/karroyabreu/ar4/src/programs_cpp -DCMAKE_INSTALL_PREFIX=/home/karroyabreu/ar4/install/programs_cpp
