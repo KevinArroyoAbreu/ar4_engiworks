@@ -26,11 +26,15 @@ class ObjectDetection(Node):
         self.yaw = 0.0
 
     
+
     def camera_callback(self, data):
+        def map_range(x, in_min, in_max, out_min, out_max):
+            return out_min + ((x - in_min) * (out_max - out_min)) / (in_max - in_min)
         try:
             cv_image_mirrored = self.bridge_object.imgmsg_to_cv2(data, desired_encoding='bgr8')
             cv_image_rotated = cv.flip(cv_image_mirrored, -1)
-            cv_image = cv.rotate(cv_image_rotated, cv.ROTATE_90_CLOCKWISE)
+            cv_image_pre = cv.rotate(cv_image_rotated, cv.ROTATE_90_CLOCKWISE)
+            cv_image = cv.convertScaleAbs(cv_image_pre, alpha=1, beta=0)
         except CvBridgeError as e:
             print(f"CvBridge Error: {e}")
         
@@ -39,20 +43,36 @@ class ObjectDetection(Node):
         hsv = cv.cvtColor(cv_image, cv.COLOR_BGR2HSV)
 
         # BLUE color range (adjust these if needed) (Hue, Saturation, Value)
-        min_hue = np.array([110, 160, 80])
-        max_hue = np.array([120, 255, 140])
+        min_hue_b = np.array([110, 160, 80])
+        max_hue_b = np.array([120, 255, 140])
 
-        mask_r = cv.inRange(hsv, min_hue, max_hue)
-        mask = cv.adaptiveThreshold(mask_r, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY_INV, 19, 11)
-        cv.imshow("mask", mask_r)
+        # RED color range (adjust these if needed) (Hue, Saturation, Value)
+        min_hue_r = np.array([170, 100, 100])
+        max_hue_r = np.array([180, 255, 240])
 
+        # GREEN color range (adjust these if needed) (Hue, Saturation, Value)
+        min_hue_g = np.array([74, 150, 100])
+        max_hue_g = np.array([82, 255, 240])
+
+
+        #========================== IMAGE PROCESSING ============================
+        mask_r = cv.inRange(hsv, min_hue_r, max_hue_r)
+        mask_g = cv.inRange(hsv, min_hue_g,max_hue_g)
+        mask_b = cv.inRange(hsv, min_hue_b, max_hue_b)
+        # mask = cv.adaptiveThreshold(mask_r, 255, cv.ADAPTIVE_THRESH_MEAN_C, cv.THRESH_BINARY_INV, 19, 11)
+        #  cv.imshow("maskR", mask_r)
+        #  cv.imshow("mask", mask)
         # Find contours
+        #=========================================================================
 
-        contours, _ = cv.findContours(mask_r, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        #============================ DRAW CONTOURS ==============================
+        contours_red, _ = cv.findContours(mask_g, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        contours_green, _ = cv.findContours(mask_g, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        contours_blue, _ = cv.findContours(mask_g, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
        # print("contours: ", contours)
 
-        for cnt in contours:
-            cv.polylines(cv_image, [cnt], True, [0, 255, 255], 3)
+        # for cnt in contours:
+        #     cv.polylines(cv_image, [cnt], True, [0, 255, 255], 3)
 
         #if contours:
          #  largest_contour = max(contours, key=cv.contourArea)
@@ -61,36 +81,41 @@ class ObjectDetection(Node):
 
         object_detected = []
 
-        for cnt in contours:
-            area = cv.contourArea(cnt)
-            if area > 20:
-                cnt = cv.approxPolyDP(cnt, 0.03 * cv.arcLength(cnt, True), True)
-                object_detected.append(cnt)
+        for cnt in contours_red:
+             area = cv.contourArea(cnt)
+             if area > 20:
+                 cnt = cv.approxPolyDP(cnt, 0.03 * cv.arcLength(cnt, True), True)
+                 object_detected.append(cnt)
+        for cnt in contours_green:
+             area = cv.contourArea(cnt)
+             if area > 20:
+                 cnt = cv.approxPolyDP(cnt, 0.03 * cv.arcLength(cnt, True), True)
+                 object_detected.append(cnt)
+        for cnt in contours_blue:
+             area = cv.contourArea(cnt)
+             if area > 20:
+                 cnt = cv.approxPolyDP(cnt, 0.03 * cv.arcLength(cnt, True), True)
+                 object_detected.append(cnt)
+        #=========================================================================
 
-       # print(f"Number of objects detected: {len(object_detected)}")
+        cv.drawContours(cv_image, contours_green, -1, (0, 255, 0), 2)
+        cv.drawContours(cv_image, contours_red, -1, (0, 0, 255), 2)
+        cv.drawContours(cv_image, contours_blue, -1, (255, 0, 0), 2)
+        # print(f"Number of objects detected: {len(object_detected)}")
         #print(object_detected)
         x_center = 0
         y_center = 0 
         width = 0
-        height = 0 #default values if no object is detected
-
-        #Pixel to mm conversion 
-        x_pxl_center = 238
-        y_pxl_center = 307.5# not needed (y0 is not on the feed)
-        pxl_mm_conversion = 18.5 / 20  # 18 pixels corresponds to 20 mm
-
-        # Using positions read using rviz and pose_gui node
-        x0 = 0
-        y0 = 47.6
-        calib_y = 100#an offset to correct y position
+        height = 0 
+        orientation = 0
         # ADJUST THIS: this is fixed (due to 2d camera being used)
-        z0 = 90.0 #using 20mm cubes
+        z0 = 80.0 #using 20mm cubes
 
 
         for cnt in object_detected:
             rect = cv.minAreaRect(cnt)
             (x_center,y_center), (width, height), orientation = rect
-            #print('width: ', width, ' height: ', height)
+           # print('width: ', width, ' height: ', height)
             box = cv.boxPoints(rect)
             box = np.int0(box)
             cv.drawContours(cv_image, [box], 0, (255, 0, 0), 1)
@@ -103,29 +128,22 @@ class ObjectDetection(Node):
                     int(center[1] + length * np.sin(radian)))
         cv.arrowedLine(cv_image, center, end_point, (0, 0, 255), 2)
 
+        #======================== COORDINATE CALCULATION ==========================
+
         # for orientation
         if width < height:
             orientation = 90 + orientation
         else:
             orientation = orientation
-        print(f"Gripper Z-axis rotation (yaw): {orientation:.2f}°")
+        #print(f"Gripper Z-axis rotation (yaw): {orientation:.2f}°")
+        #print(f"Dimensions: width: {width:.2f} mm, height: {height:.2f} mm")
 
          #condition right of the imgage
-        if (x_center > x_pxl_center):
-            y =  - ( y0 + (y_center)/pxl_mm_conversion + calib_y )
-            x = x0+(-x_pxl_center + x_center)/pxl_mm_conversion
-            z = z0
-        
-        #condition left of the imgage
-        elif (x_center < x_pxl_center):
-            y = - ( y0 + (y_center)/pxl_mm_conversion + calib_y )
-            x = x0-(x_pxl_center - x_center)/pxl_mm_conversion 
+        if x_center != 0  and y_center != 0:
+            y = map_range(y_center, 146, 420, -295, -588)
+            x = map_range(x_center, 46, 427, -197, 187)
             z = z0
 
-        elif (x_center == x_pxl_center) and (y_center == y_pxl_center):
-            x= x0
-            y= - y0
-            z = z0
         
         else:
             y = 0
@@ -142,6 +160,8 @@ class ObjectDetection(Node):
         self.y_pos = y
         self.z_pos = z
         self.yaw = orientationRad
+
+        #=========================================================================
 
         cv.putText(cv_image, "x: {}".format(round(x, 1)) + " y: {}".format(round(y,1)), 
                        (int(x_center), int(y_center)), cv.FONT_HERSHEY_PLAIN, 1, (0,0,255),1)

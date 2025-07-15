@@ -55,6 +55,7 @@ def generate_launch_description():
             },
         ],
         remappings=[('~/robot_description', 'robot_description')],
+        #-r __param:=robot_description
         output="screen",
     )
 
