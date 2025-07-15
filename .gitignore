@@ -1,3 +1,6 @@
 # Ignore build artifacts
+*.db
+.vscode/
 build/
+log/
 install/
