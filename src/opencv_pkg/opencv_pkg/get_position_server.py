@@ -24,12 +24,52 @@ class ObjectDetection(Node):
         self.y_pos = 0.0
         self.z_pos = 0.0
         self.yaw = 0.0
+        self.contours_green = []
+        self.contours_red = []
+        self.contours_blue = []
+
+    
+    
+    def get_object_coordinates(self, contours, x_px_range, y_px_range, x_mm_range, y_mm_range, z0=80):
+            def map_range(x, in_min, in_max, out_min, out_max):
+                return out_min + ((x - in_min) * (out_max - out_min)) / (in_max - in_min)
+            x_center = 0
+            y_center = 0
+            orientation = 0
+            width = 0
+            height = 0
+            x = 0
+            y = 0
+            z = 100
+
+            if len(contours) == 0:
+                print("No contours found for this color.")
+                return 0, 0, 100, 0, 0, 0  # Default values (z=100 means safe height)
+
+            # Pick the largest contour
+            cnt = max(contours, key=cv.contourArea)
+            rect = cv.minAreaRect(cnt)
+            (x_center, y_center), (width, height), orientation = rect
+            #print(f'x: {x_center}, y: {y_center}')
+            # Adjust orientation for tall objects
+            if width < height:
+                orientation = 90 + orientation
+
+            if x_center != 0 and y_center != 0:
+                y = map_range(y_center, *y_px_range, *y_mm_range)
+                x = map_range(x_center, *x_px_range, *x_mm_range)
+                z = z0
+            else:
+                x, y, z, orientation_rad, x_center, y_center = 0, 0, 100, 0, 0, 0
+                print("Object not detected in expected range.")
+
+            orientation_rad = np.deg2rad(orientation)
+            return x, y, z, orientation_rad, x_center, y_center
 
     
 
     def camera_callback(self, data):
-        def map_range(x, in_min, in_max, out_min, out_max):
-            return out_min + ((x - in_min) * (out_max - out_min)) / (in_max - in_min)
+        
         try:
             cv_image_mirrored = self.bridge_object.imgmsg_to_cv2(data, desired_encoding='bgr8')
             cv_image_rotated = cv.flip(cv_image_mirrored, -1)
@@ -66,41 +106,29 @@ class ObjectDetection(Node):
         #=========================================================================
 
         #============================ DRAW CONTOURS ==============================
-        contours_red, _ = cv.findContours(mask_g, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-        contours_green, _ = cv.findContours(mask_g, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-        contours_blue, _ = cv.findContours(mask_g, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-       # print("contours: ", contours)
+        # contours_red, _ = cv.findContours(mask_r, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        # contours_green, _ = cv.findContours(mask_g, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        # contours_blue, _ = cv.findContours(mask_b, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
-        # for cnt in contours:
-        #     cv.polylines(cv_image, [cnt], True, [0, 255, 255], 3)
+        self.contours_green, _ = cv.findContours(mask_g, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        self.contours_red, _ = cv.findContours(mask_r, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        self.contours_blue, _ = cv.findContours(mask_b, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
-        #if contours:
-         #  largest_contour = max(contours, key=cv.contourArea)
-          # cv.drawContours(cv_image, [largest_contour], -1, (255, 255, 0), 3)
-
-
-        object_detected = []
-
-        for cnt in contours_red:
+        for cnt in self.contours_red:
              area = cv.contourArea(cnt)
              if area > 20:
                  cnt = cv.approxPolyDP(cnt, 0.03 * cv.arcLength(cnt, True), True)
-                 object_detected.append(cnt)
-        for cnt in contours_green:
+        for cnt in self.contours_green:
              area = cv.contourArea(cnt)
              if area > 20:
                  cnt = cv.approxPolyDP(cnt, 0.03 * cv.arcLength(cnt, True), True)
-                 object_detected.append(cnt)
-        for cnt in contours_blue:
+        for cnt in self.contours_blue:
              area = cv.contourArea(cnt)
              if area > 20:
                  cnt = cv.approxPolyDP(cnt, 0.03 * cv.arcLength(cnt, True), True)
-                 object_detected.append(cnt)
         #=========================================================================
 
-        cv.drawContours(cv_image, contours_green, -1, (0, 255, 0), 2)
-        cv.drawContours(cv_image, contours_red, -1, (0, 0, 255), 2)
-        cv.drawContours(cv_image, contours_blue, -1, (255, 0, 0), 2)
+        
         # print(f"Number of objects detected: {len(object_detected)}")
         #print(object_detected)
         x_center = 0
@@ -112,73 +140,85 @@ class ObjectDetection(Node):
         z0 = 80.0 #using 20mm cubes
 
 
-        for cnt in object_detected:
-            rect = cv.minAreaRect(cnt)
-            (x_center,y_center), (width, height), orientation = rect
-           # print('width: ', width, ' height: ', height)
-            box = cv.boxPoints(rect)
-            box = np.int0(box)
-            cv.drawContours(cv_image, [box], 0, (255, 0, 0), 1)
 
-        # Draw an arrow showing direction
-        center = (int(x_center), int(y_center))
-        length = 50
-        radian = np.deg2rad(orientation)
-        end_point = (int(center[0] + length * np.cos(radian)),
-                    int(center[1] + length * np.sin(radian)))
-        cv.arrowedLine(cv_image, center, end_point, (0, 0, 255), 2)
+        def draw_orientation_box(contours, color, image):
+            for cnt in contours:
+                area = cv.contourArea(cnt)
+                if area < 20:
+                    continue
+
+                rect = cv.minAreaRect(cnt)
+                (x_center, y_center), (width, height), orientation = rect
+
+                # Draw rotated bounding box
+                box = cv.boxPoints(rect)
+                box = np.int0(box)
+                cv.drawContours(image, [box], 0, color, 2)
+
+                # Draw arrow for orientation
+                center = (int(x_center), int(y_center))
+                length = 40  # Length of arrow
+                radian = np.deg2rad(orientation)
+                end_point = (int(center[0] + length * np.cos(radian)),
+                            int(center[1] + length * np.sin(radian)))
+                cv.arrowedLine(image, center, end_point, color, 2)
+
+        draw_orientation_box(self.contours_green, (0, 255, 0), cv_image)
+        draw_orientation_box(self.contours_red, (0, 0, 255), cv_image)
+        draw_orientation_box(self.contours_blue, (255, 0, 0), cv_image)
+
 
         #======================== COORDINATE CALCULATION ==========================
 
-        # for orientation
-        if width < height:
-            orientation = 90 + orientation
-        else:
-            orientation = orientation
-        #print(f"Gripper Z-axis rotation (yaw): {orientation:.2f}°")
-        #print(f"Dimensions: width: {width:.2f} mm, height: {height:.2f} mm")
-
-         #condition right of the imgage
-        if x_center != 0  and y_center != 0:
-            y = map_range(y_center, 146, 420, -295, -588)
-            x = map_range(x_center, 46, 427, -197, 187)
-            z = z0
-
         
-        else:
-            y = 0
-            x = 0
-            z = 100
-            orientation = 0
-            x_center = 0
-            y_center = 0
-            print("Object not detected in the expected range, setting default coordinates.")
+        x_px_range = (46, 427)
+        y_px_range = (146, 420)
+        x_mm_range = (-197, 187)
+        y_mm_range = (-295, -588)
 
-        # Convert orientation to radians
-        orientationRad = np.deg2rad(orientation)
+        x, y, z, yaw, x_px, y_px = self.get_object_coordinates(self.contours_green, x_px_range, y_px_range, x_mm_range, y_mm_range)
+
+
         self.x_pos = x
         self.y_pos = y
         self.z_pos = z
-        self.yaw = orientationRad
+        self.yaw = yaw
 
-        #=========================================================================
+        cv.putText(cv_image, f"x: {round(x,1)} y: {round(y,1)}", (int(x_px), int(y_px)),
+           cv.FONT_HERSHEY_PLAIN, 1, (9, 9, 9), 1)
+        cv.circle(cv_image, (int(x_px), int(y_px)), 3, (0, 255, 0), -1)
 
-        cv.putText(cv_image, "x: {}".format(round(x, 1)) + " y: {}".format(round(y,1)), 
-                       (int(x_center), int(y_center)), cv.FONT_HERSHEY_PLAIN, 1, (0,0,255),1)
-        cv.circle(cv_image, (int(x_center), int(y_center)), 3, (0, 0, 255), -1)
+
         cv.imshow("Obj Detection - Real World Coordinates", cv_image)
         cv.waitKey(1)
 
     # Handle for the service to get position
     def handle_get_position(self, request, response):
-        # fill in the fields of the passed-in response object
-        response.x_position = float(self.x_pos) if self.x_pos is not None else 0.0
-        response.y_position = float(self.y_pos) if self.y_pos is not None else 0.0
-        response.z_position = float(self.z_pos) if self.z_pos is not None else 0.0
-        response.yaw = float(self.yaw) if self.yaw is not None else 0.0
+        color = request.color_requested.lower()
+
+        if color == "green":
+            contours = self.contours_green
+        elif color == "red":
+            contours = self.contours_red
+        elif color == "blue":
+            contours = self.contours_blue
+        else:
+            contours = []
+
+        x_px_range = (46, 427)
+        y_px_range = (146, 420)
+        x_mm_range = (-197, 187)
+        y_mm_range = (-295, -588)
+
+        x, y, z, yaw, _, _ = self.get_object_coordinates(contours, x_px_range, y_px_range, x_mm_range, y_mm_range)
+
+        response.x_position = float(x)
+        response.y_position = float(y)
+        response.z_position = float(z)
+        response.yaw = float(yaw)
 
         self.get_logger().info(
-            f"Position requested: x={response.x_position}, y={response.y_position}, z={response.z_position}, yaw={response.yaw}"
+            f"Position requested: color: {color} x={x}, y={y}, z={z}, yaw={yaw}"
         )
 
         return response
