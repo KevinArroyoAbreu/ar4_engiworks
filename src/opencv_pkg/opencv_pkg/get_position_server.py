@@ -52,6 +52,7 @@ class ObjectDetection(Node):
             (x_center, y_center), (width, height), orientation = rect
             #print(f'x: {x_center}, y: {y_center}')
             # Adjust orientation for tall objects
+    
             if width < height:
                 orientation = 90 + orientation
 
@@ -91,8 +92,8 @@ class ObjectDetection(Node):
         max_hue_r = np.array([180, 255, 240])
 
         # GREEN color range (adjust these if needed) (Hue, Saturation, Value)
-        min_hue_g = np.array([74, 150, 100])
-        max_hue_g = np.array([82, 255, 240])
+        min_hue_g = np.array([74, 140, 80])
+        max_hue_g = np.array([82, 255, 255])
 
 
         #========================== IMAGE PROCESSING ============================
@@ -137,11 +138,15 @@ class ObjectDetection(Node):
         height = 0 
         orientation = 0
         # ADJUST THIS: this is fixed (due to 2d camera being used)
-        z0 = 80.0 #using 20mm cubes
+        # = 80.0 #using 20mm cubes
+        # RANGE BEING DETECTED ============
+        x_px_range = (46, 427)
+        y_px_range = (146, 420)
+        x_mm_range = (-197, 187)
+        y_mm_range = (-295, -588)
 
 
-
-        def draw_orientation_box(contours, color, image):
+        def draw_orientation_box(contours, color, image, x_px_range, y_px_range):
             for cnt in contours:
                 area = cv.contourArea(cnt)
                 if area < 20:
@@ -149,6 +154,13 @@ class ObjectDetection(Node):
 
                 rect = cv.minAreaRect(cnt)
                 (x_center, y_center), (width, height), orientation = rect
+
+                # BOUNDING BOX FOR DRAWING THE BOXES ====================================================
+                # =======================================================================================
+
+                # Skip drawing if outside bounding box
+                if not (x_px_range[0] <= x_center <= x_px_range[1] and y_px_range[0] <= y_center <= y_px_range[1]):
+                    continue
 
                 # Draw rotated bounding box
                 box = cv.boxPoints(rect)
@@ -163,38 +175,46 @@ class ObjectDetection(Node):
                             int(center[1] + length * np.sin(radian)))
                 cv.arrowedLine(image, center, end_point, color, 2)
 
-        draw_orientation_box(self.contours_green, (0, 255, 0), cv_image)
-        draw_orientation_box(self.contours_red, (0, 0, 255), cv_image)
-        draw_orientation_box(self.contours_blue, (255, 0, 0), cv_image)
+        draw_orientation_box(self.contours_green, (0, 255, 0), cv_image, x_px_range, y_px_range)
+        draw_orientation_box(self.contours_red, (0, 0, 255), cv_image, x_px_range, y_px_range)
+        draw_orientation_box(self.contours_blue, (255, 0, 0), cv_image, x_px_range, y_px_range)
 
 
         #======================== COORDINATE CALCULATION ==========================
 
         
-        x_px_range = (46, 427)
-        y_px_range = (146, 420)
-        x_mm_range = (-197, 187)
-        y_mm_range = (-295, -588)
 
-        x, y, z, yaw, x_px, y_px = self.get_object_coordinates(self.contours_green, x_px_range, y_px_range, x_mm_range, y_mm_range)
+        # Define your contour-color pairs
+        colors = [
+            (self.contours_green, (0, 30, 0), "Green"),
+            (self.contours_red, (0, 0, 30), "Red"),
+            (self.contours_blue, (30, 0, 0), "Blue"),
+        ]
 
-
-        self.x_pos = x
-        self.y_pos = y
-        self.z_pos = z
-        self.yaw = yaw
-
-        cv.putText(cv_image, f"x: {round(x,1)} y: {round(y,1)}", (int(x_px), int(y_px)),
-           cv.FONT_HERSHEY_PLAIN, 1, (9, 9, 9), 1)
-        cv.circle(cv_image, (int(x_px), int(y_px)), 3, (0, 255, 0), -1)
-
+        # Loop over each color group
+        for contours, draw_color, label in colors:
+            x, y, z, yaw, x_px, y_px = self.get_object_coordinates(
+                contours, x_px_range, y_px_range, x_mm_range, y_mm_range
+            )
+            # BOUNDING BOX IS HERE TOO FOR DRAWING =======================================================
+            # ============================================================================================
+            if x is not None and y is not None:
+                if x_px_range[0] <= x_px <= x_px_range[1] and y_px_range[0] <= y_px <= y_px_range[1]:
+                    # Draw a circle and text at the object location only if inside bounding box
+                    cv.circle(cv_image, (int(x_px), int(y_px)), 3, draw_color, -1)
+                    cv.putText(cv_image,
+                            f"{label}: x={round(x, 1)} y={round(y, 1)}",
+                            (int(x_px) + 5, int(y_px) - 5),
+                            cv.FONT_HERSHEY_PLAIN, 1, draw_color, 1)
+                else:
+                    self.get_logger().warn(f"{label} object outside bounding box; skipping draw.")
 
         cv.imshow("Obj Detection - Real World Coordinates", cv_image)
         cv.waitKey(1)
 
     # Handle for the service to get position
     def handle_get_position(self, request, response):
-        color = request.color_requested.lower()
+        color = request.color.lower()
 
         if color == "green":
             contours = self.contours_green
@@ -210,7 +230,14 @@ class ObjectDetection(Node):
         x_mm_range = (-197, 187)
         y_mm_range = (-295, -588)
 
-        x, y, z, yaw, _, _ = self.get_object_coordinates(contours, x_px_range, y_px_range, x_mm_range, y_mm_range)
+        x, y, z, yaw, x_px, y_px = self.get_object_coordinates(contours, x_px_range, y_px_range, x_mm_range, y_mm_range)
+
+        # BOUNDING BOX FOR DETECTION ==========================================================================
+        # =====================================================================================================
+
+        if not (x_px_range[0] <= x_px <= x_px_range[1] and y_px_range[0] <= y_px <= y_px_range[1]):
+            self.get_logger().warn("Detected object is outside of the bounding box; ignoring.")
+            return response  # Optionally return empty/default response or raise an error
 
         response.x_position = float(x)
         response.y_position = float(y)

@@ -68,8 +68,8 @@
         lower="${robot_parameters['j1_limit_min']}"
         upper="${robot_parameters['j1_limit_max']}"
         effort="-1"
-        velocity="1.0472"
-      /><!-- 1.0472 -->
+        velocity="9"
+      /><!-- 1.0472 / 6 works well -->
     </joint>
     <link name="${tf_prefix}link_2">
       <inertial>
@@ -102,7 +102,7 @@
         lower="${robot_parameters['j2_limit_min']}"
         upper="${robot_parameters['j2_limit_max']}"
         effort="-1" 
-        velocity="1.0472"
+        velocity="9"
       /><!-- 1.0472 -->
     </joint>
     <link name="${tf_prefix}link_3">
@@ -136,7 +136,7 @@
         lower="${robot_parameters['j3_limit_min']}"
         upper="${robot_parameters['j3_limit_max']}"
         effort="-1"
-        velocity="1.0472"
+        velocity="9"
       /><!-- 1.0472 -->
     </joint>
     <link name="${tf_prefix}link_4">
@@ -170,7 +170,7 @@
         lower="${robot_parameters['j4_limit_min']}"
         upper="${robot_parameters['j4_limit_max']}"
         effort="-1"
-        velocity="1.0472"
+        velocity="9"
       /><!-- 1.0472 -->
     </joint>
     <link name="${tf_prefix}link_5">
@@ -204,7 +204,7 @@
         lower="${robot_parameters['j5_limit_min']}"
         upper="${robot_parameters['j5_limit_max']}"
         effort="-1"
-        velocity="1.0472"
+        velocity="9"
       /><!-- 1.0472 -->
     </joint>
     <link name="${tf_prefix}link_6">
@@ -238,7 +238,7 @@
         lower="${robot_parameters['j6_limit_min']}"
         upper="${robot_parameters['j6_limit_max']}"
         effort="-1"
-        velocity="1.0472"
+        velocity="9"
         
       /><!-- 1.0472 -->
     </joint>

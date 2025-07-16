@@ -11,6 +11,7 @@
 #include </home/karroyabreu/ar4/src/programs_cpp/saved_poses/ar4Poses.hpp>
 
 using GetPosition = position_tracker::srv::GetPosition;
+using namespace std::chrono_literals;
 
 enum class MotionType {
   Joint,
@@ -87,8 +88,19 @@ public:
   {
     client_ = this->create_client<GetPosition>("get_position");
   }
-  std::vector<PoseStep> pick_place_sequence;
+  // ======================================================================================================================
+  // ================================== INITIALIZE SEQUENCES =================================================================
+  // ======================================================================================================================
+  std::vector<PoseStep> pick_red;
+  std::vector<PoseStep> pick_blue;
+  std::vector<PoseStep> pick_green;
+  std::vector<PoseStep> place_cube_left;
+  std::vector<PoseStep> place_cube_center;
+  std::vector<PoseStep> place_cube_right;
+  std::vector<PoseStep> home;
+
   std::vector<PoseStep> mount_arm_sequence;
+  std::vector<PoseStep> dock_arm_sequence;
   std::vector<PoseStep> move_tray_sequence;
   
 
@@ -98,27 +110,68 @@ public:
   {
     init_move_group();
     init_gripper_group();
-    auto node = std::make_shared<ProgramsNode>();
+    //auto node = std::make_shared<ProgramsNode>();
 
     // ======================================================================================================================
     // ================================== PROGRAM SEQUENCES =================================================================
     // ======================================================================================================================
-    pick_place_sequence = {
+    home = {
       PoseStep(MotionType::GripperOpen),
       PoseStep(ready_pose, 1, 0.8, false, 1000, MotionType::Joint),
-      PoseStep("red", 0.8, 0.3, false, 100, MotionType::Joint),
-      PoseStep(MotionType::GripperClose),
-      PoseStep(example_drop_pose, 1, 0.3, true, 100, MotionType::Cartesian)
+    };
+    pick_red = {
+      PoseStep(MotionType::GripperOpen),
+      PoseStep(ready_pose, 1, 0.8, false, 1000, MotionType::Joint),
+      PoseStep("red", 0.8, 0.8, false, 100, MotionType::Joint),
+      PoseStep(MotionType::GripperClose)
+    };
+    pick_green = {
+      PoseStep(MotionType::GripperOpen),
+      PoseStep(ready_pose, 1, 0.8, false, 1000, MotionType::Joint),
+      PoseStep("blue", 0.8, 0.3, false, 100, MotionType::Joint),
+      PoseStep(MotionType::GripperClose)
+    };
+    pick_blue = {
+      PoseStep(MotionType::GripperOpen),
+      PoseStep(ready_pose, 1, 0.8, false, 1000, MotionType::Joint),
+      PoseStep("green", 0.8, 0.3, false, 100, MotionType::Joint),
+      PoseStep(MotionType::GripperClose)
+    };
+    place_cube_left = {
+      PoseStep(center_cube_drop_hover, 1, 1, false, 100, MotionType::Joint),
+      PoseStep(left_cube_drop_hover, 0.6, 1, false, 100, MotionType::Joint),
+      PoseStep(left_cube_drop, 0.6, 1, true, 100, MotionType::Cartesian),
+      PoseStep(MotionType::GripperOpen)
+    };
+    place_cube_center = {
+      PoseStep(center_cube_drop_hover, 1, 1, false, 100, MotionType::Joint),
+      PoseStep(center_cube_drop, 0.6, 1, true, 100, MotionType::Cartesian),
+      PoseStep(MotionType::GripperOpen)
+    };
+    place_cube_right = {
+      PoseStep(center_cube_drop_hover, 1, 1, false, 100, MotionType::Joint),
+      PoseStep(right_cube_drop_hover, 0.6, 1, false, 100, MotionType::Joint),
+      PoseStep(right_cube_drop, 0.6, 1, true, 100, MotionType::Cartesian),
+      PoseStep(MotionType::GripperOpen)
     };
 
     mount_arm_sequence = {
       PoseStep(MotionType::GripperOpen),
       PoseStep(ready_pose, 1, 0.8, false, 100, MotionType::Joint),
-      PoseStep(arm_pre_dock, 0.1, 0.8, false, 100, MotionType::Joint),
-      PoseStep(arm_dock, 0.8, 0.3, true, 100, MotionType::Cartesian),
+      PoseStep(arm_pre_dock_v1, 1, 0.8, false, 100, MotionType::Joint),
+      PoseStep(arm_dock_v1, 0.8, 0.3, true, 100, MotionType::Cartesian),
       PoseStep(MotionType::GripperClose),
-      PoseStep(arm_pre_dock, 0.8, 0.3, true, 100, MotionType::Cartesian),
+      PoseStep(arm_pre_dock_v1, 0.8, 0.3, true, 100, MotionType::Cartesian),
       PoseStep(dock_ready, 1, 0.8, false, 100, MotionType::Joint)
+    };
+    dock_arm_sequence = {
+      PoseStep(MotionType::GripperClose),
+      PoseStep(ready_pose, 1, 0.8, false, 100, MotionType::Joint), 
+      PoseStep(arm_pre_dock_v1, 1, 0.8, false, 100, MotionType::Joint), 
+      PoseStep(arm_dock_v1, 0.8, 0.3, true, 100, MotionType::Cartesian),
+      PoseStep(MotionType::GripperOpen),
+      PoseStep(arm_disengage, 1, 0.6, true, 100, MotionType::Cartesian),
+      PoseStep(ready_pose, 1, 0.8, false, 100, MotionType::Joint) 
     };
 
     move_tray_sequence = { 
@@ -129,14 +182,14 @@ public:
 
   void init_move_group()
   {
-    move_group_ = std::make_unique<moveit::planning_interface::MoveGroupInterface>(this, "ar_manipulator");
+    move_group_ = std::make_unique<moveit::planning_interface::MoveGroupInterface>(shared_from_this(), "ar_manipulator");
     move_group_->setMaxVelocityScalingFactor(1.0);
     move_group_->setMaxAccelerationScalingFactor(1.0);
   }
 
   void init_gripper_group()
   {
-    gripper_group_ = std::make_unique<moveit::planning_interface::MoveGroupInterface>(this, "ar_gripper");
+    gripper_group_ = std::make_unique<moveit::planning_interface::MoveGroupInterface>(shared_from_this(), "ar_gripper");
     gripper_group_->setMaxVelocityScalingFactor(1.0);
     gripper_group_->setMaxAccelerationScalingFactor(1.0);
   }
@@ -259,12 +312,6 @@ private:
   geometry_msgs::msg::Pose red_pose;
   geometry_msgs::msg::Pose green_pose;
   geometry_msgs::msg::Pose blue_pose;
-  
-  geometry_msgs::msg::Pose ready_pose;
-  geometry_msgs::msg::Pose example_drop_pose;
-  geometry_msgs::msg::Pose arm_pre_dock;
-  geometry_msgs::msg::Pose arm_dock;
-  geometry_msgs::msg::Pose dock_ready;
 };
 
 int main(int argc, char** argv)
@@ -275,7 +322,19 @@ int main(int argc, char** argv)
   // Call init AFTER shared_ptr creation so shared_from_this() works
   node->init();
 
-  node->run_sequence(node->pick_place_sequence);
+  node->run_sequence(node->pick_red);
+  node->run_sequence(node->place_cube_center);
+  node->run_sequence(node->pick_blue);
+  node->run_sequence(node->place_cube_left);
+  node->run_sequence(node->pick_green);
+  node->run_sequence(node->place_cube_right); 
+  node->run_sequence(node->home); 
+ // node->run_sequence(node->place_cube_2);
+ // node->run_sequence(node->place_cube_3);
+ // node->run_sequence(node->mount_arm_sequence);
+ // rclcpp::sleep_for(2s);
+ // node->run_sequence(node->dock_arm_sequence);
+ // node->run_sequence(node->move_tray_sequence);
 
   rclcpp::spin(node);
   rclcpp::shutdown();

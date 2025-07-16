@@ -20,22 +20,19 @@ ament_target_dependencies(prog1
 )
 
 # Executable 2
-add_executable(pickObject src/pickObject.cpp)
-ament_target_dependencies(pickObject
-  rclcpp
-  moveit_ros_planning_interface
-)
-
-# Install targets
-install(TARGETS prog1 pickObject
-  DESTINATION lib/${PROJECT_NAME}
-)
-
-ament_target_dependencies(pickObject
+add_executable(cubeRoutine src/cubeRoutine.cpp)
+ament_target_dependencies(cubeRoutine
   rclcpp
   moveit_ros_planning_interface
   position_tracker
 )
+
+# Install targets
+install(TARGETS prog1 cubeRoutine
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+
 
 
 if(BUILD_TESTING)
