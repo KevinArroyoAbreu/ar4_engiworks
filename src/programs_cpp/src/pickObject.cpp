@@ -68,7 +68,7 @@ geometry_msgs::msg::Pose create_pose_from_xyz_yaw(double x, double y, double z, 
   return pose;
 }
 
-class ProgramsNode : public rclcpp::Node
+class ProgramsNode : public rclcpp::Node, public std::enable_shared_from_this<ProgramsNode>
 {
 public:
   ProgramsNode()
@@ -76,28 +76,71 @@ public:
   {
     client_ = this->create_client<GetPosition>("get_position");
   }
+  std::vector<PoseStep> pick_place_sequence;
+  std::vector<PoseStep> mount_arm_sequence;
+  std::vector<PoseStep> move_tray_sequence;
+
+  
+  // Initialization function to be called after shared_ptr creation
+  void init()
+  {
+    init_move_group();
+    init_gripper_group();
+    auto node = std::make_shared<ProgramsNode>();
+
+    // Poses got from camera
+    red_pose = get_object_pose_by_color(client_, "red", get_logger(), node);
+    green_pose = get_object_pose_by_color(client_, "green", get_logger(), node);
+    blue_pose = get_object_pose_by_color(client_, "blue", get_logger(), node);
+
+    // ===================================================================================
+    // ================================== PROGRAM SEQUENCES ==============================
+    // ===================================================================================
+    pick_place_sequence = {
+      PoseStep(MotionType::GripperOpen),
+      PoseStep(ready_pose, 0.8, 0.3, false, 1000, MotionType::Joint),
+      PoseStep(red_pose, 0.5, 0.3, false, 100, MotionType::Joint),
+      PoseStep(MotionType::GripperClose),
+      PoseStep(example_drop_pose, 0.8, 0.3, true, 100, MotionType::Cartesian)
+    };
+
+    mount_arm_sequence = {
+      PoseStep(MotionType::GripperOpen),
+      PoseStep(ready_pose, 1, 0.8, false, 100, MotionType::Joint),
+      PoseStep(arm_pre_dock, 0.1, 0.8, false, 100, MotionType::Joint),
+      PoseStep(arm_dock, 0.8, 0.3, true, 100, MotionType::Cartesian),
+      PoseStep(MotionType::GripperClose),
+      PoseStep(arm_pre_dock, 0.8, 0.3, true, 100, MotionType::Cartesian),
+      PoseStep(dock_ready, 1, 0.8, false, 100, MotionType::Joint)
+    };
+
+    move_tray_sequence = { 
+      // PoseStep(ready_pose, 1, 0.8, false, 100, MotionType::Joint),
+      // PoseStep(arm_pre_dock, 0.1, 0.8, false, 100, MotionType::Joint)
+    };
+  }
 
   void init_move_group()
   {
-    move_group_ = std::make_unique<moveit::planning_interface::MoveGroupInterface>(shared_from_this(), "ar_manipulator");
+    move_group_ = std::make_unique<moveit::planning_interface::MoveGroupInterface>(this, "ar_manipulator");
     move_group_->setMaxVelocityScalingFactor(1.0);
     move_group_->setMaxAccelerationScalingFactor(1.0);
   }
 
   void init_gripper_group()
   {
-    gripper_group_ = std::make_unique<moveit::planning_interface::MoveGroupInterface>(shared_from_this(), "ar_gripper");
+    gripper_group_ = std::make_unique<moveit::planning_interface::MoveGroupInterface>(this, "ar_gripper");
     gripper_group_->setMaxVelocityScalingFactor(1.0);
     gripper_group_->setMaxAccelerationScalingFactor(1.0);
   }
 
   void openGripper() {
-  gripper_group_->setNamedTarget("open");
-  if (gripper_group_->move() != moveit::core::MoveItErrorCode::SUCCESS) {
-    RCLCPP_ERROR(rclcpp::get_logger("Gripper"), "Failed to open gripper.");
-  } else {
-    RCLCPP_INFO(rclcpp::get_logger("Gripper"), "Gripper opened.");
-  }
+    gripper_group_->setNamedTarget("open");
+    if (gripper_group_->move() != moveit::core::MoveItErrorCode::SUCCESS) {
+      RCLCPP_ERROR(rclcpp::get_logger("Gripper"), "Failed to open gripper.");
+    } else {
+      RCLCPP_INFO(rclcpp::get_logger("Gripper"), "Gripper opened.");
+    }
   }
 
   void closeGripper() {
@@ -108,113 +151,118 @@ public:
       RCLCPP_INFO(rclcpp::get_logger("Gripper"), "Gripper closed.");
     }
   }
-
-  void run_motion_sequence() {
-  // ... (same code to get object_pose from service)
-  if (!client_->wait_for_service(std::chrono::seconds(3))) {
-  RCLCPP_ERROR(get_logger(), "GetPosition service not available.");
-  return;
-  }
-
-  auto request = std::make_shared<GetPosition::Request>();
-  auto future = client_->async_send_request(request);
-  if (rclcpp::spin_until_future_complete(this->get_node_base_interface(), future) !=
-      rclcpp::FutureReturnCode::SUCCESS) {
-    RCLCPP_ERROR(get_logger(), "Failed to call GetPosition service.");
-    return;
-  }
-
-  const auto& response = future.get();
-  geometry_msgs::msg::Pose object_pose = create_pose_from_xyz_yaw(
-    response->x_position, response->y_position, response->z_position, 0.0);
-
-
-  // THIS IS THE CODE FOR THE SEQUENCE OF POSES =============================================
-  //=========================================================================================
-  std::vector<PoseStep> sequence = {
-       PoseStep(MotionType::GripperOpen),
-      //  PoseStep(ready_pose, 0.8, 0.3, false, 1000, MotionType::Joint),
-      //  PoseStep(arm_pre_dock, 0.8, 0.3, false, 1000, MotionType::Joint),
-      //  PoseStep(arm_dock, 0.8, 0.3, true, 1000, MotionType::Cartesian),
-      //  PoseStep(MotionType::GripperClose),
-      //  PoseStep(arm_pre_dock, 0.8, 0.3, true, 1000, MotionType::Cartesian),
-      //  PoseStep(dock_ready, 0.8, 0.3, false, 1000, MotionType::Joint)
-
-
-     PoseStep(ready_pose, 0.8, 0.3, false, 1000, MotionType::Joint),
-
-     PoseStep(object_pose, 0.5, 0.3, false, 100, MotionType::Joint),
-
-     PoseStep(MotionType::GripperClose),
-
-     PoseStep(example_drop_pose, 0.8, 0.3, true, 100, MotionType::Cartesian),
-
-     PoseStep(MotionType::GripperOpen)
-  };
-  //=========================================================================================
-  //=========================================================================================
-
-  for (size_t i = 0; i < sequence.size(); ++i) {
-    const auto& step = sequence[i];
-
-    if (step.motion_type == MotionType::GripperOpen) {
-      openGripper();
-      rclcpp::sleep_for(std::chrono::milliseconds(step.wait_time_ms));
-      continue;
-    } else if (step.motion_type == MotionType::GripperClose) {
-      closeGripper();
-      rclcpp::sleep_for(std::chrono::milliseconds(step.wait_time_ms));
-      continue;
+  
+  geometry_msgs::msg::Pose get_object_pose_by_color(
+    const std::shared_ptr<rclcpp::Client<GetPosition>>& client,
+    const std::string& color,
+    rclcpp::Logger logger,
+    const std::shared_ptr<ProgramsNode>& node)
+  {
+    if (!client->wait_for_service(std::chrono::seconds(3))) {
+      RCLCPP_ERROR(logger, "GetPosition service not available.");
+      return geometry_msgs::msg::Pose{};
     }
 
-    move_group_->setPoseTarget(step.pose);
-    move_group_->setMaxVelocityScalingFactor(step.velocity_scaling);
-    move_group_->setMaxAccelerationScalingFactor(step.acceleration_scaling);
-    move_group_->setPlanningTime(5.0);
+    auto request = std::make_shared<GetPosition::Request>();
+    request->color = color;
 
-    moveit::planning_interface::MoveGroupInterface::Plan plan;
-    bool success = false;
+    auto future = client->async_send_request(request);
+    if (rclcpp::spin_until_future_complete(node, future) != rclcpp::FutureReturnCode::SUCCESS) {
+      RCLCPP_ERROR(logger, "Failed to call GetPosition service.");
+      return geometry_msgs::msg::Pose{};
+    }
 
-    if (step.motion_type == MotionType::Cartesian) {
-      std::vector<geometry_msgs::msg::Pose> waypoints = { step.pose };
-      moveit_msgs::msg::RobotTrajectory trajectory;
-      const double eef_step = 0.01;
-      const double jump_threshold = 0.0;
-      double fraction = move_group_->computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
+    const auto& response = future.get();
+    RCLCPP_INFO(logger, "Received pose for color %s: [%.2f, %.2f, %.2f], yaw=%.2f",
+                color.c_str(), response->x_position, response->y_position, response->z_position, response->yaw);
 
-      if (fraction > 0.9) {
-        plan.trajectory = trajectory;
-        success = true;
+    return create_pose_from_xyz_yaw(
+      response->x_position,
+      response->y_position,
+      response->z_position,
+      response->yaw
+    );
+  }
+
+  void run_sequence(const std::vector<PoseStep>& sequence) {
+    for (size_t i = 0; i < sequence.size(); ++i) {
+      const auto& step = sequence[i];
+
+      if (step.motion_type == MotionType::GripperOpen) {
+        openGripper();
+        rclcpp::sleep_for(std::chrono::milliseconds(step.wait_time_ms));
+        continue;
+      } else if (step.motion_type == MotionType::GripperClose) {
+        closeGripper();
+        rclcpp::sleep_for(std::chrono::milliseconds(step.wait_time_ms));
+        continue;
       }
-    } else {
-      success = (move_group_->plan(plan) == moveit_msgs::msg::MoveItErrorCodes::SUCCESS);
-    }
 
-    if (success) {
-      move_group_->execute(plan);
-      RCLCPP_INFO(get_logger(), "Executed step %zu", i);
-    } else {
-      RCLCPP_WARN(get_logger(), "Planning failed at step %zu", i);
-      break;
-    }
+      move_group_->setPoseTarget(step.pose);
+      move_group_->setMaxVelocityScalingFactor(step.velocity_scaling);
+      move_group_->setMaxAccelerationScalingFactor(step.acceleration_scaling);
+      move_group_->setPlanningTime(5.0);
 
-    move_group_->clearPoseTargets();
-    rclcpp::sleep_for(std::chrono::milliseconds(step.wait_time_ms));
+      moveit::planning_interface::MoveGroupInterface::Plan plan;
+      bool success = false;
+
+      if (step.motion_type == MotionType::Cartesian) {
+        std::vector<geometry_msgs::msg::Pose> waypoints = { step.pose };
+        moveit_msgs::msg::RobotTrajectory trajectory;
+        const double eef_step = 0.01;
+        const double jump_threshold = 0.0;
+        double fraction = move_group_->computeCartesianPath(waypoints, eef_step, jump_threshold, trajectory);
+
+        if (fraction > 0.9) {
+          plan.trajectory = trajectory;
+          success = true;
+        }
+      } else {
+        success = (move_group_->plan(plan) == moveit_msgs::msg::MoveItErrorCodes::SUCCESS);
+      }
+
+      if (success) {
+        move_group_->execute(plan);
+        RCLCPP_INFO(get_logger(), "Executed step %zu", i);
+      } else {
+        RCLCPP_WARN(get_logger(), "Planning failed at step %zu", i);
+        break;
+      }
+
+      move_group_->clearPoseTargets();
+      rclcpp::sleep_for(std::chrono::milliseconds(step.wait_time_ms));
+    }
   }
-}
+
 private:
+  geometry_msgs::msg::Pose red_pose;
+  geometry_msgs::msg::Pose green_pose;
+  geometry_msgs::msg::Pose blue_pose;
+
   rclcpp::Client<GetPosition>::SharedPtr client_;
   std::unique_ptr<moveit::planning_interface::MoveGroupInterface> move_group_;
   std::unique_ptr<moveit::planning_interface::MoveGroupInterface> gripper_group_;
+
+  // ===================================================================================
+  // ================================ INITIALIZE EACH POSE HERE ========================
+  // ===================================================================================
+  geometry_msgs::msg::Pose ready_pose;
+  geometry_msgs::msg::Pose example_drop_pose;
+  geometry_msgs::msg::Pose arm_pre_dock;
+  geometry_msgs::msg::Pose arm_dock;
+  geometry_msgs::msg::Pose dock_ready;
 };
 
 int main(int argc, char** argv)
 {
   rclcpp::init(argc, argv);
   auto node = std::make_shared<ProgramsNode>();
-  node->init_move_group();
-  node->init_gripper_group();  // ✅ Initialize the gripper MoveGroup
-  node->run_motion_sequence();
+
+  // Call init AFTER shared_ptr creation so shared_from_this() works
+  node->init();
+
+  node->run_sequence(node->pick_place_sequence);
+
   rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;
