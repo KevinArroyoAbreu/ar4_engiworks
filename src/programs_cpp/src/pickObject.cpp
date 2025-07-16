@@ -26,16 +26,27 @@ struct PoseStep {
   bool use_cartesian;
   int wait_time_ms;
   MotionType motion_type;
+  std::string target_color; 
 
+  // Constructor for static pose-based steps
   PoseStep(const geometry_msgs::msg::Pose& p,
-    double vel, double acc, bool cartesian, int wait_ms, MotionType type)
+           double vel, double acc, bool cartesian, int wait_ms, MotionType type)
     : pose(p), velocity_scaling(vel), acceleration_scaling(acc),
-      use_cartesian(cartesian), wait_time_ms(wait_ms), motion_type(type) {}
+      use_cartesian(cartesian), wait_time_ms(wait_ms),
+      motion_type(type), target_color("") {}  // Initialize target_color as empty
 
-  // Constructor for gripper actions (no pose required)
+  // Constructor for gripper actions (open/close)
   PoseStep(MotionType gripper_action)
     : velocity_scaling(0), acceleration_scaling(0),
-      use_cartesian(false), wait_time_ms(1000), motion_type(gripper_action) {}
+      use_cartesian(false), wait_time_ms(1000),
+      motion_type(gripper_action), target_color("") {}
+
+  // Constructor for dynamic color-based pose
+  PoseStep(const std::string& color,
+           double vel, double acc, bool cartesian, int wait_ms, MotionType type)
+    : velocity_scaling(vel), acceleration_scaling(acc),
+      use_cartesian(cartesian), wait_time_ms(wait_ms),
+      motion_type(type), target_color(color) {}
 };
 
 geometry_msgs::msg::Pose create_pose_from_xyz_yaw(double x, double y, double z, double yaw)
@@ -68,7 +79,7 @@ geometry_msgs::msg::Pose create_pose_from_xyz_yaw(double x, double y, double z, 
   return pose;
 }
 
-class ProgramsNode : public rclcpp::Node, public std::enable_shared_from_this<ProgramsNode>
+class ProgramsNode : public rclcpp::Node
 {
 public:
   ProgramsNode()
@@ -79,6 +90,7 @@ public:
   std::vector<PoseStep> pick_place_sequence;
   std::vector<PoseStep> mount_arm_sequence;
   std::vector<PoseStep> move_tray_sequence;
+  
 
   
   // Initialization function to be called after shared_ptr creation
@@ -88,18 +100,13 @@ public:
     init_gripper_group();
     auto node = std::make_shared<ProgramsNode>();
 
-    // Poses got from camera
-    red_pose = get_object_pose_by_color(client_, "red", get_logger(), node);
-    green_pose = get_object_pose_by_color(client_, "green", get_logger(), node);
-    blue_pose = get_object_pose_by_color(client_, "blue", get_logger(), node);
-
-    // ===================================================================================
-    // ================================== PROGRAM SEQUENCES ==============================
-    // ===================================================================================
+    // ======================================================================================================================
+    // ================================== PROGRAM SEQUENCES =================================================================
+    // ======================================================================================================================
     pick_place_sequence = {
       PoseStep(MotionType::GripperOpen),
       PoseStep(ready_pose, 0.8, 0.3, false, 1000, MotionType::Joint),
-      PoseStep(red_pose, 0.5, 0.3, false, 100, MotionType::Joint),
+      PoseStep("red", 0.5, 0.3, false, 100, MotionType::Joint),
       PoseStep(MotionType::GripperClose),
       PoseStep(example_drop_pose, 0.8, 0.3, true, 100, MotionType::Cartesian)
     };
@@ -156,7 +163,7 @@ public:
     const std::shared_ptr<rclcpp::Client<GetPosition>>& client,
     const std::string& color,
     rclcpp::Logger logger,
-    const std::shared_ptr<ProgramsNode>& node)
+    const std::shared_ptr<rclcpp::Node>& node)
   {
     if (!client->wait_for_service(std::chrono::seconds(3))) {
       RCLCPP_ERROR(logger, "GetPosition service not available.");
@@ -186,7 +193,7 @@ public:
 
   void run_sequence(const std::vector<PoseStep>& sequence) {
     for (size_t i = 0; i < sequence.size(); ++i) {
-      const auto& step = sequence[i];
+      auto step = sequence[i];
 
       if (step.motion_type == MotionType::GripperOpen) {
         openGripper();
@@ -196,6 +203,11 @@ public:
         closeGripper();
         rclcpp::sleep_for(std::chrono::milliseconds(step.wait_time_ms));
         continue;
+      }
+
+      // Dynamically fetch pose if this step uses a color
+      if (!step.target_color.empty()) {
+        step.pose = get_object_pose_by_color(client_, step.target_color, get_logger(), this->shared_from_this());
       }
 
       move_group_->setPoseTarget(step.pose);
@@ -243,9 +255,9 @@ private:
   std::unique_ptr<moveit::planning_interface::MoveGroupInterface> move_group_;
   std::unique_ptr<moveit::planning_interface::MoveGroupInterface> gripper_group_;
 
-  // ===================================================================================
-  // ================================ INITIALIZE EACH POSE HERE ========================
-  // ===================================================================================
+  // ===================================================================================================================
+  // ================================ INITIALIZE EACH POSE HERE ========================================================
+  // ===================================================================================================================
   geometry_msgs::msg::Pose ready_pose;
   geometry_msgs::msg::Pose example_drop_pose;
   geometry_msgs::msg::Pose arm_pre_dock;
