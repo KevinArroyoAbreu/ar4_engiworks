@@ -105,10 +105,10 @@ public:
     // ======================================================================================================================
     pick_place_sequence = {
       PoseStep(MotionType::GripperOpen),
-      PoseStep(ready_pose, 0.8, 0.3, false, 1000, MotionType::Joint),
-      PoseStep("red", 0.5, 0.3, false, 100, MotionType::Joint),
+      PoseStep(ready_pose, 1, 0.8, false, 1000, MotionType::Joint),
+      PoseStep("red", 0.8, 0.3, false, 100, MotionType::Joint),
       PoseStep(MotionType::GripperClose),
-      PoseStep(example_drop_pose, 0.8, 0.3, true, 100, MotionType::Cartesian)
+      PoseStep(example_drop_pose, 1, 0.3, true, 100, MotionType::Cartesian)
     };
 
     mount_arm_sequence = {
@@ -247,9 +247,7 @@ public:
   }
 
 private:
-  geometry_msgs::msg::Pose red_pose;
-  geometry_msgs::msg::Pose green_pose;
-  geometry_msgs::msg::Pose blue_pose;
+  
 
   rclcpp::Client<GetPosition>::SharedPtr client_;
   std::unique_ptr<moveit::planning_interface::MoveGroupInterface> move_group_;
@@ -258,6 +256,10 @@ private:
   // ===================================================================================================================
   // ================================ INITIALIZE EACH POSE HERE ========================================================
   // ===================================================================================================================
+  geometry_msgs::msg::Pose red_pose;
+  geometry_msgs::msg::Pose green_pose;
+  geometry_msgs::msg::Pose blue_pose;
+  
   geometry_msgs::msg::Pose ready_pose;
   geometry_msgs::msg::Pose example_drop_pose;
   geometry_msgs::msg::Pose arm_pre_dock;
