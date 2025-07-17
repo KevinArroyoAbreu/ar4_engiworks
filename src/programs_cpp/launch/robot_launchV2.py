@@ -5,6 +5,8 @@ from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 import os
 
+#SAME AS ROBOT LAUNCH, BUT WITH V2 POSITION SERVER
+
 
 def generate_launch_description():
     # This is the driver of the robot
@@ -40,10 +42,10 @@ def generate_launch_description():
     )
 
     # Launch the position tracker server
-    get_position_server = Node(
+    position_server_v2 = Node(
         package='opencv_pkg',
-        executable='get_position_server',
-        name='get_position_server',
+        executable='position_server_v2',
+        name='position_server_v2',
         namespace=''
     )
 
@@ -54,5 +56,5 @@ def generate_launch_description():
         #driver_launch,
         moveit_launch,
         camera_node,
-        get_position_server
+        position_server_v2
     ])

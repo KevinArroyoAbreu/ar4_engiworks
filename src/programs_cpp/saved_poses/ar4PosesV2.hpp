@@ -103,21 +103,6 @@ geometry_msgs::msg::Pose arm_disengage = []() {
     return arm_disengage;
 }();
 
-
-//-----------pre_cube_drop---------------
-geometry_msgs::msg::Pose pre_cube_drop = []() {
-    geometry_msgs::msg::Pose pre_cube_drop;
-    pre_cube_drop.position.x = -0.003327;
-    pre_cube_drop.position.y = -0.547037;
-    pre_cube_drop.position.z = 0.087;//0.082654
-    pre_cube_drop.orientation.x = 0.000024;
-    pre_cube_drop.orientation.y = 0.786002;
-    pre_cube_drop.orientation.z = -0.618224;
-    pre_cube_drop.orientation.w = -0.000004;
-    return pre_cube_drop;
-}();
-
-
 //-----------align_with_container_v1---------------
 geometry_msgs::msg::Pose align_with_container_v1 = []() {
     geometry_msgs::msg::Pose align_with_container_v1;
@@ -212,6 +197,20 @@ geometry_msgs::msg::Pose container_deliver_backoff_v2 = []() {
     container_deliver_backoff_v2.orientation.z = 0.027847;
     container_deliver_backoff_v2.orientation.w = 0.468899;
     return container_deliver_backoff_v2;
+}();
+
+
+//-----------pre_cube_drop---------------
+geometry_msgs::msg::Pose pre_cube_drop = []() {
+    geometry_msgs::msg::Pose pre_cube_drop;
+    pre_cube_drop.position.x = -0.012457;
+    pre_cube_drop.position.y = -0.477385;
+    pre_cube_drop.position.z = 0.260235;
+    pre_cube_drop.orientation.x = 0.000129;
+    pre_cube_drop.orientation.y = 0.955994;
+    pre_cube_drop.orientation.z = -0.293388;
+    pre_cube_drop.orientation.w = -0.000022;
+    return pre_cube_drop;
 }();
 
 #endif // SAVED_POSES_HPP

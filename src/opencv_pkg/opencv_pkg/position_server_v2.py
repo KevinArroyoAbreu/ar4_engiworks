@@ -100,16 +100,16 @@ class ObjectDetection(Node):
         hsv = cv.cvtColor(cv_image, cv.COLOR_BGR2HSV)
 
         # BLUE color range (adjust these if needed) (Hue, Saturation, Value)
-        min_hue_b = np.array([113, 150, 160])
-        max_hue_b = np.array([120, 255, 220])
+        min_hue_b = np.array([110, 100, 100])
+        max_hue_b = np.array([130, 255, 255])
 
         # RED color range (adjust these if needed) (Hue, Saturation, Value)
-        min_hue_r = np.array([150, 110, 130])
-        max_hue_r = np.array([220, 255, 255])
+        min_hue_r = np.array([150, 100, 100])
+        max_hue_r = np.array([225, 255, 255])
 
         # GREEN color range (adjust these if needed) (Hue, Saturation, Value)
-        min_hue_g = np.array([74, 160, 140])
-        max_hue_g = np.array([80, 255, 240])
+        min_hue_g = np.array([70, 100, 100])
+        max_hue_g = np.array([80, 255, 255])
 
 
         #========================== IMAGE PROCESSING ============================

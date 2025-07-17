@@ -10,7 +10,7 @@
 #include "position_tracker/srv/get_position.hpp"  
 #include </home/karroyabreu/ar4/src/programs_cpp/saved_poses/ar4PosesV2.hpp>
 
-//THIS IS A COPY OF CubeRoutine.cpp, please edit prior to running
+//THIS IS A COPY OF CubeRoutine.cpp, but for target detection
 
 using GetPosition = position_tracker::srv::GetPosition;
 using namespace std::chrono_literals;
@@ -99,7 +99,7 @@ public:
   ProgramsNode()
     : Node("programs_node")
   {
-    client_ = this->create_client<GetPosition>("get_position");
+    client_ = this->create_client<GetPosition>("get_position_v2");
   }
   // ======================================================================================================================
   // ================================== INITIALIZE SEQUENCES =================================================================
@@ -172,9 +172,10 @@ public:
     };
 
     // Sequences for placing red cube on red target
-    geometry_msgs::msg::Pose high_pose_rpl = get_object_pose_by_color(client_, "red_target", 170.0, get_logger(), this->shared_from_this());
+    geometry_msgs::msg::Pose high_pose_rpl = get_object_pose_by_color(client_, "red_target", 250.0, get_logger(), this->shared_from_this());
+    high_pose_rpl.position.y += 0.300;
     geometry_msgs::msg::Pose low_pose_rpl = high_pose_rpl;
-    low_pose_rpl.position.z = 0.100;
+    low_pose_rpl.position.z = 0.200;
 
     place_cube_red = {
       PoseStep(pre_cube_drop, 1, 1, false, 0, MotionType::Joint),
@@ -184,9 +185,10 @@ public:
     };
 
     // Sequences for placing blue cube on blue target
-    geometry_msgs::msg::Pose high_pose_bpl = get_object_pose_by_color(client_, "blue_target", 170.0, get_logger(), this->shared_from_this());
+    geometry_msgs::msg::Pose high_pose_bpl = get_object_pose_by_color(client_, "blue_target", 250.0, get_logger(), this->shared_from_this());
+    high_pose_bpl.position.y += 0.300;
     geometry_msgs::msg::Pose low_pose_bpl = high_pose_bpl;
-    low_pose_bpl.position.z = 0.100;
+    low_pose_bpl.position.z = 0.200;
 
     place_cube_blue = {
       PoseStep(pre_cube_drop, 1, 1, false, 0, MotionType::Joint),
@@ -196,9 +198,10 @@ public:
     };
 
     // Sequences for placing green cube on green target
-    geometry_msgs::msg::Pose high_pose_gpl = get_object_pose_by_color(client_, "green_target", 170.0, get_logger(), this->shared_from_this());
+    geometry_msgs::msg::Pose high_pose_gpl = get_object_pose_by_color(client_, "green_target", 250.0, get_logger(), this->shared_from_this());
+    high_pose_gpl.position.y += 0.300;
     geometry_msgs::msg::Pose low_pose_gpl = high_pose_gpl;
-    low_pose_gpl.position.z = 0.100;
+    low_pose_gpl.position.z = 0.200;
 
     place_cube_green = {
       PoseStep(pre_cube_drop, 1, 1, false, 0, MotionType::Joint),
