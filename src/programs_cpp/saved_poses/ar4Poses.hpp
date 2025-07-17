@@ -19,6 +19,18 @@ geometry_msgs::msg::Pose ready_pose = []() {
     return ready_pose;
 }();
 
+//-----------ready_pose_joint---------------
+std::vector<double> ready_joint_pose = []() {
+    std::vector<double> joints(6);
+    joints[0] = 30.0 * M_PI / 180.0;
+    joints[1] = -45.0 * M_PI / 180.0;
+    joints[2] = 60.0 * M_PI / 180.0;
+    joints[3] = 0.0 * M_PI / 180.0;
+    joints[4] = 90.0 * M_PI / 180.0;
+    joints[5] = -15.0 * M_PI / 180.0;
+    return joints;
+}();
+
 
 //-----------example_drop_pose---------------
 geometry_msgs::msg::Pose example_drop_pose = []() {
@@ -173,19 +185,6 @@ geometry_msgs::msg::Pose right_cube_drop_hover = []() {
     return right_cube_drop_hover;
 }();
 
-
-//-----------right_cube_drop---------------
-geometry_msgs::msg::Pose right_cube_drop = []() {
-    geometry_msgs::msg::Pose right_cube_drop;
-    right_cube_drop.position.x = - 0.1;//-0.039560
-    right_cube_drop.position.y = -0.596137;
-    right_cube_drop.position.z = 0.113455;//0.133455
-    right_cube_drop.orientation.x = -0.700876;
-    right_cube_drop.orientation.y = 0.706227;
-    right_cube_drop.orientation.z = -0.070483;
-    right_cube_drop.orientation.w = -0.071054;
-    return right_cube_drop;
-}();
 
 
 //-----------center_cube_drop_hover---------------
@@ -380,6 +379,34 @@ geometry_msgs::msg::Pose container_deliver_backoff_v1 = []() {
     container_deliver_backoff_v1.orientation.z = 0.029052;
     container_deliver_backoff_v1.orientation.w = 0.345964;
     return container_deliver_backoff_v1;
+}();
+
+
+//-----------right_cube_drop---------------
+geometry_msgs::msg::Pose right_cube_drop = []() {
+    geometry_msgs::msg::Pose right_cube_drop;
+    right_cube_drop.position.x = -0.043273;
+    right_cube_drop.position.y = -0.579540;
+    right_cube_drop.position.z = 0.135244;
+    right_cube_drop.orientation.x = 0.704098;
+    right_cube_drop.orientation.y = 0.678852;
+    right_cube_drop.orientation.z = -0.149064;
+    right_cube_drop.orientation.w = 0.145556;
+    return right_cube_drop;
+}();
+
+
+//-----------container_deliver_backoff_v2---------------
+geometry_msgs::msg::Pose container_deliver_backoff_v2 = []() {
+    geometry_msgs::msg::Pose container_deliver_backoff_v2;
+    container_deliver_backoff_v2.position.x = -0.060602;
+    container_deliver_backoff_v2.position.y = -0.219235;
+    container_deliver_backoff_v2.position.z = 0.214142;
+    container_deliver_backoff_v2.orientation.x = 0.001694;
+    container_deliver_backoff_v2.orientation.y = 0.882811;
+    container_deliver_backoff_v2.orientation.z = 0.027847;
+    container_deliver_backoff_v2.orientation.w = 0.468899;
+    return container_deliver_backoff_v2;
 }();
 
 #endif // SAVED_POSES_HPP

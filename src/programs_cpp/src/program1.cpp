@@ -6,6 +6,8 @@
 #include </home/karroyabreu/ar4/src/programs_cpp/saved_poses/poses7_12.hpp>
 #include <chrono>
 
+// NOTICE: This programs was made for testing purposes, not validated on real robot!!
+
 class ProgramsNode : public rclcpp::Node
 {
 public:

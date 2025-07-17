@@ -10,6 +10,8 @@
 #include "position_tracker/srv/get_position.hpp"  
 #include </home/karroyabreu/ar4/src/programs_cpp/saved_poses/ar4Poses.hpp>
 
+//THIS IS A COPY OF CubeRoutine.cpp, please edit prior to running
+
 using GetPosition = position_tracker::srv::GetPosition;
 using namespace std::chrono_literals;
 
@@ -178,7 +180,7 @@ public:
     place_cube_right = {
       PoseStep(center_cube_drop_hover, 1, 1, false, 0, MotionType::Joint),
       PoseStep(right_cube_drop_hover, 0.6, 1, false, 0, MotionType::Joint),
-      PoseStep(right_cube_drop, 0.6, 1, false, 0, MotionType::Joint),
+      PoseStep(right_cube_drop, 0.6, 1, true, 0, MotionType::Cartesian),
       PoseStep(MotionType::GripperOpen)
     };
 
@@ -207,7 +209,7 @@ public:
        PoseStep(lift_container_v1, 1, 1, false, 0, MotionType::Joint),
        PoseStep(container_deliver_hover_v1, 1, 1, false, 0, MotionType::Joint),
        PoseStep(container_deliver_dropoff_v1, 1, 1, false, 0, MotionType::Joint),
-       PoseStep(container_deliver_backoff_v2, 1, 1, false, 0, MotionType::Joint)
+       PoseStep(container_deliver_backoff_v1, 1, 1, false, 0, MotionType::Joint)
 
     };
   }

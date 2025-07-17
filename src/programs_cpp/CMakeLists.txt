@@ -27,8 +27,22 @@ ament_target_dependencies(cubeRoutine
   position_tracker
 )
 
+# Executable 3
+add_executable(newRoutine src/newRoutine.cpp)
+ament_target_dependencies(newRoutine
+  rclcpp
+  moveit_ros_planning_interface
+  position_tracker
+)
+
+# Launch file
+install(
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}/
+)
+
 # Install targets
-install(TARGETS prog1 cubeRoutine
+install(TARGETS prog1 cubeRoutine newRoutine
   DESTINATION lib/${PROJECT_NAME}
 )
 
