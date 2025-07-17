@@ -12,13 +12,13 @@ def mouse_callback(event, x, y, flags, param):
 
 def main():
     global hsv_image
-    cap = cv2.VideoCapture(4)  # Change 0 if you have multiple cameras
+    cap = cv2.VideoCapture(4)  # Change index if needed
+
     if not cap.isOpened():
         print("Cannot open camera")
         return
 
     cv2.namedWindow('Live Camera')
-
     cv2.setMouseCallback('Live Camera', mouse_callback)
 
     while True:
@@ -27,8 +27,10 @@ def main():
             print("Can't receive frame. Exiting...")
             break
 
-        hsv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        # Brightness/contrast adjustment
+        frame = cv2.convertScaleAbs(frame, alpha=1.4, beta=0)
 
+        hsv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         cv2.imshow('Live Camera', frame)
 
         if cv2.waitKey(1) & 0xFF == 27:  # ESC to quit

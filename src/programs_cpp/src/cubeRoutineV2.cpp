@@ -8,7 +8,7 @@
 #include <tf2/LinearMath/Quaternion.h>
 
 #include "position_tracker/srv/get_position.hpp"  
-#include </home/karroyabreu/ar4/src/programs_cpp/saved_poses/ar4Poses.hpp>
+#include </home/karroyabreu/ar4/src/programs_cpp/saved_poses/ar4PosesV2.hpp>
 
 //THIS IS A COPY OF CubeRoutine.cpp, please edit prior to running
 
@@ -32,7 +32,7 @@ struct PoseStep {
   int wait_time_ms;
   MotionType motion_type;
   std::string target_color;
-  double desired_z = 100.0; 
+  double desired_z = 250.0; 
 
   // Static pose
   PoseStep(const geometry_msgs::msg::Pose& p,
@@ -107,9 +107,9 @@ public:
   std::vector<PoseStep> pick_red;
   std::vector<PoseStep> pick_blue;
   std::vector<PoseStep> pick_green;
-  std::vector<PoseStep> place_cube_left;
-  std::vector<PoseStep> place_cube_center;
-  std::vector<PoseStep> place_cube_right;
+  std::vector<PoseStep> place_cube_red;
+  std::vector<PoseStep> place_cube_blue;
+  std::vector<PoseStep> place_cube_green;
   std::vector<PoseStep> home;
 
   std::vector<PoseStep> mount_arm_sequence;
@@ -134,6 +134,8 @@ public:
       PoseStep(MotionType::GripperOpen),
       PoseStep(ready_pose, 1, 0.8, false, 0, MotionType::Joint),
     };
+
+    // Define the hover and drop poses for red cube
     geometry_msgs::msg::Pose high_pose_r = get_object_pose_by_color(client_, "red", 100.0, get_logger(), this->shared_from_this());
     geometry_msgs::msg::Pose low_pose_r = high_pose_r;
     low_pose_r.position.z = 0.08;
@@ -145,6 +147,7 @@ public:
       PoseStep(MotionType::GripperClose)
     };
 
+    // Define the hover and drop poses for green cube
     geometry_msgs::msg::Pose high_pose_g = get_object_pose_by_color(client_, "green", 100.0, get_logger(), this->shared_from_this());
     geometry_msgs::msg::Pose low_pose_g = high_pose_g;
     low_pose_g.position.z = 0.08;
@@ -156,6 +159,7 @@ public:
       PoseStep(MotionType::GripperClose)
     };
 
+    // Define the hover and drop poses for blue cube
     geometry_msgs::msg::Pose high_pose_b = get_object_pose_by_color(client_, "blue", 100.0, get_logger(), this->shared_from_this());
     geometry_msgs::msg::Pose low_pose_b = high_pose_b;
     low_pose_b.position.z = 0.08;  
@@ -166,24 +170,44 @@ public:
       PoseStep(low_pose_b, 0.5, 0.5, false, 0, MotionType::Joint),
       PoseStep(MotionType::GripperClose)
     };
-    place_cube_left = {
-      PoseStep(center_cube_drop_hover, 1, 1, false, 0, MotionType::Joint),
-      PoseStep(left_cube_drop_hover, 0.6, 1, false, 0, MotionType::Joint),
-      PoseStep(left_cube_drop, 0.6, 1, true, 0, MotionType::Cartesian),
-      PoseStep(MotionType::GripperOpen)
-    };
-    place_cube_center = {
-      PoseStep(center_cube_drop_hover, 1, 1, false, 0, MotionType::Joint),
-      PoseStep(center_cube_drop, 0.6, 1, true, 0, MotionType::Cartesian),
-      PoseStep(MotionType::GripperOpen)
-    };
-    place_cube_right = {
-      PoseStep(center_cube_drop_hover, 1, 1, false, 0, MotionType::Joint),
-      PoseStep(right_cube_drop_hover, 0.6, 1, false, 0, MotionType::Joint),
-      PoseStep(right_cube_drop, 0.6, 1, true, 0, MotionType::Cartesian),
+
+    // Sequences for placing red cube on red target
+    geometry_msgs::msg::Pose high_pose_rpl = get_object_pose_by_color(client_, "red_target", 170.0, get_logger(), this->shared_from_this());
+    geometry_msgs::msg::Pose low_pose_rpl = high_pose_rpl;
+    low_pose_rpl.position.z = 0.100;
+
+    place_cube_red = {
+      PoseStep(pre_cube_drop, 1, 1, false, 0, MotionType::Joint),
+      PoseStep(high_pose_rpl, 0.6, 1, false, 0, MotionType::Joint),
+      PoseStep(low_pose_rpl, 0.6, 1, true, 0, MotionType::Cartesian),
       PoseStep(MotionType::GripperOpen)
     };
 
+    // Sequences for placing blue cube on blue target
+    geometry_msgs::msg::Pose high_pose_bpl = get_object_pose_by_color(client_, "blue_target", 170.0, get_logger(), this->shared_from_this());
+    geometry_msgs::msg::Pose low_pose_bpl = high_pose_bpl;
+    low_pose_bpl.position.z = 0.100;
+
+    place_cube_blue = {
+      PoseStep(pre_cube_drop, 1, 1, false, 0, MotionType::Joint),
+      PoseStep(high_pose_bpl, 1, 1, false, 0, MotionType::Joint),
+      PoseStep(low_pose_bpl, 0.6, 1, true, 0, MotionType::Cartesian),
+      PoseStep(MotionType::GripperOpen)
+    };
+
+    // Sequences for placing green cube on green target
+    geometry_msgs::msg::Pose high_pose_gpl = get_object_pose_by_color(client_, "green_target", 170.0, get_logger(), this->shared_from_this());
+    geometry_msgs::msg::Pose low_pose_gpl = high_pose_gpl;
+    low_pose_gpl.position.z = 0.100;
+
+    place_cube_green = {
+      PoseStep(pre_cube_drop, 1, 1, false, 0, MotionType::Joint),
+      PoseStep(high_pose_gpl, 0.6, 1, false, 0, MotionType::Joint),
+      PoseStep(low_pose_gpl, 0.6, 1, true, 0, MotionType::Cartesian),
+      PoseStep(MotionType::GripperOpen)
+    };
+
+    // Sequences for mounting and docking the arm
     mount_arm_sequence = {
       PoseStep(MotionType::GripperOpen),
       PoseStep(ready_pose, 1, 0.8, false, 0, MotionType::Joint),
@@ -202,7 +226,7 @@ public:
       PoseStep(arm_disengage, 1, 0.6, true, 0, MotionType::Cartesian), 
       PoseStep(ready_pose, 1, 0.8, false, 0, MotionType::Joint) 
     };
-
+    // Sequence for moving the container
     move_container_sequence = { 
        PoseStep(align_with_container_v1, 1, 1, false, 0, MotionType::Joint),
        PoseStep(pickup_container_v1, 1, 1, false, 0, MotionType::Joint),
@@ -352,9 +376,6 @@ private:
   // ===================================================================================================================
   // ================================ INITIALIZE EACH POSE HERE ========================================================
   // ===================================================================================================================
-  geometry_msgs::msg::Pose red_pose;
-  geometry_msgs::msg::Pose green_pose;
-  geometry_msgs::msg::Pose blue_pose;
 };
 
 int main(int argc, char** argv)
@@ -367,13 +388,13 @@ int main(int argc, char** argv)
 
    node->run_sequence(node->home);
    node->run_sequence(node->pick_red);
-   node->run_sequence(node->place_cube_center);
+   node->run_sequence(node->place_cube_blue);
    node->run_sequence(node->home);
    node->run_sequence(node->pick_blue);
-   node->run_sequence(node->place_cube_left);
+   node->run_sequence(node->place_cube_red);
    node->run_sequence(node->home);
    node->run_sequence(node->pick_green);
-   node->run_sequence(node->place_cube_right); 
+   node->run_sequence(node->place_cube_green); 
    node->run_sequence(node->mount_arm_sequence);
    node->run_sequence(node->move_container_sequence);
    node->run_sequence(node->dock_arm_sequence);
