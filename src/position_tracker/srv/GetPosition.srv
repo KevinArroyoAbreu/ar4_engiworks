@@ -1,5 +1,6 @@
 bool get_position
 string color
+float64 desired_z
 ---
 float64 x_position
 float64 y_position

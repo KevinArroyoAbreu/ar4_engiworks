@@ -8,6 +8,9 @@ from cv_bridge import CvBridge, CvBridgeError
 #this is the service import
 from position_tracker.srv import GetPosition
 
+req = GetPosition.Request()
+print(hasattr(req, "desired_z")) 
+
 class ObjectDetection(Node):
     def __init__(self):
         super().__init__('edge_detection_node')
@@ -18,6 +21,7 @@ class ObjectDetection(Node):
             self.camera_callback,
             10
         )
+        self.last_pose_by_color = {}
         self.bridge_object = CvBridge()
         self.server = self.create_service(GetPosition, '/get_position', self.handle_get_position)
         self.x_pos = 0.0
@@ -30,7 +34,7 @@ class ObjectDetection(Node):
 
     
     
-    def get_object_coordinates(self, contours, x_px_range, y_px_range, x_mm_range, y_mm_range, z0=80):
+    def get_object_coordinates(self, contours, x_px_range, y_px_range, x_mm_range, y_mm_range, z0):
             def map_range(x, in_min, in_max, out_min, out_max):
                 return out_min + ((x - in_min) * (out_max - out_min)) / (in_max - in_min)
             x_center = 0
@@ -137,6 +141,7 @@ class ObjectDetection(Node):
         width = 0
         height = 0 
         orientation = 0
+        
         # ADJUST THIS: this is fixed (due to 2d camera being used)
         # = 80.0 #using 20mm cubes
         # RANGE BEING DETECTED ============
@@ -194,7 +199,7 @@ class ObjectDetection(Node):
         # Loop over each color group
         for contours, draw_color, label in colors:
             x, y, z, yaw, x_px, y_px = self.get_object_coordinates(
-                contours, x_px_range, y_px_range, x_mm_range, y_mm_range
+                contours, x_px_range, y_px_range, x_mm_range, y_mm_range, 100.0
             )
             # BOUNDING BOX IS HERE TOO FOR DRAWING =======================================================
             # ============================================================================================
@@ -215,6 +220,7 @@ class ObjectDetection(Node):
     # Handle for the service to get position
     def handle_get_position(self, request, response):
         color = request.color.lower()
+        z0 = request.desired_z if request.desired_z > 0 else 100.0
 
         if color == "green":
             contours = self.contours_green
@@ -230,7 +236,11 @@ class ObjectDetection(Node):
         x_mm_range = (-197, 187)
         y_mm_range = (-295, -588)
 
-        x, y, z, yaw, x_px, y_px = self.get_object_coordinates(contours, x_px_range, y_px_range, x_mm_range, y_mm_range)
+        if color in self.last_pose_by_color:
+            x, y, yaw, x_px, y_px = self.last_pose_by_color[color]
+            z = request.desired_z if request.desired_z > 0 else 100.0
+        else:
+            x, y, z, yaw, x_px, y_px = self.get_object_coordinates(contours, x_px_range, y_px_range, x_mm_range, y_mm_range, z0)
 
         # BOUNDING BOX FOR DETECTION ==========================================================================
         # =====================================================================================================

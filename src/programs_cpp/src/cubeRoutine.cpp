@@ -17,7 +17,8 @@ enum class MotionType {
   Joint,
   Cartesian,
   GripperOpen,
-  GripperClose
+  GripperClose,
+  LoweredFromColor
 };
 
 struct PoseStep {
@@ -27,27 +28,30 @@ struct PoseStep {
   bool use_cartesian;
   int wait_time_ms;
   MotionType motion_type;
-  std::string target_color; 
+  std::string target_color;
+  double desired_z = 100.0; 
 
-  // Constructor for static pose-based steps
+  // Static pose
   PoseStep(const geometry_msgs::msg::Pose& p,
            double vel, double acc, bool cartesian, int wait_ms, MotionType type)
     : pose(p), velocity_scaling(vel), acceleration_scaling(acc),
       use_cartesian(cartesian), wait_time_ms(wait_ms),
-      motion_type(type), target_color("") {}  // Initialize target_color as empty
+      motion_type(type), target_color("") {}
 
-  // Constructor for gripper actions (open/close)
+  // Gripper
   PoseStep(MotionType gripper_action)
     : velocity_scaling(0), acceleration_scaling(0),
       use_cartesian(false), wait_time_ms(1000),
-      motion_type(gripper_action), target_color("") {}
+      motion_type(gripper_action), target_color(""){}
 
-  // Constructor for dynamic color-based pose
+  // Dynamic pose (base color)
   PoseStep(const std::string& color,
+           double desired_z_input,
            double vel, double acc, bool cartesian, int wait_ms, MotionType type)
     : velocity_scaling(vel), acceleration_scaling(acc),
       use_cartesian(cartesian), wait_time_ms(wait_ms),
-      motion_type(type), target_color(color) {}
+      motion_type(type), target_color(color), 
+      desired_z(desired_z_input) {}
 };
 
 geometry_msgs::msg::Pose create_pose_from_xyz_yaw(double x, double y, double z, double yaw)
@@ -101,7 +105,9 @@ public:
 
   std::vector<PoseStep> mount_arm_sequence;
   std::vector<PoseStep> dock_arm_sequence;
-  std::vector<PoseStep> move_tray_sequence;
+  std::vector<PoseStep> move_container_sequence;
+
+  
   
 
   
@@ -117,66 +123,88 @@ public:
     // ======================================================================================================================
     home = {
       PoseStep(MotionType::GripperOpen),
-      PoseStep(ready_pose, 1, 0.8, false, 1000, MotionType::Joint),
+      PoseStep(ready_pose, 1, 0.8, false, 0, MotionType::Joint),
     };
+    geometry_msgs::msg::Pose high_pose_r = get_object_pose_by_color(client_, "red", 100.0, get_logger(), this->shared_from_this());
+    geometry_msgs::msg::Pose low_pose_r = high_pose_r;
+    low_pose_r.position.z = 0.08;
+
     pick_red = {
       PoseStep(MotionType::GripperOpen),
-      PoseStep(ready_pose, 1, 0.8, false, 1000, MotionType::Joint),
-      PoseStep("red", 0.8, 0.8, false, 100, MotionType::Joint),
+      PoseStep(ready_pose, 1, 0.8, false, 0, MotionType::Joint),
+      PoseStep(high_pose_r, 0.8, 0.3, false, 0, MotionType::Joint),
+      PoseStep(low_pose_r, 0.5, 0.5, true, 0, MotionType::Cartesian),
       PoseStep(MotionType::GripperClose)
     };
+
+    geometry_msgs::msg::Pose high_pose_g = get_object_pose_by_color(client_, "green", 100.0, get_logger(), this->shared_from_this());
+    geometry_msgs::msg::Pose low_pose_g = high_pose_g;
+    low_pose_g.position.z = 0.08;
+
     pick_green = {
       PoseStep(MotionType::GripperOpen),
-      PoseStep(ready_pose, 1, 0.8, false, 1000, MotionType::Joint),
-      PoseStep("blue", 0.8, 0.3, false, 100, MotionType::Joint),
+      PoseStep(ready_pose, 1, 0.8, false, 0, MotionType::Joint),
+      PoseStep(high_pose_g, 0.8, 0.3, false, 0, MotionType::Joint),
+      PoseStep(low_pose_g, 0.5, 0.5, true, 0, MotionType::Cartesian),
       PoseStep(MotionType::GripperClose)
     };
+
+    geometry_msgs::msg::Pose high_pose_b = get_object_pose_by_color(client_, "blue", 100.0, get_logger(), this->shared_from_this());
+    geometry_msgs::msg::Pose low_pose_b = high_pose_b;
+    low_pose_b.position.z = 0.08;  
+
     pick_blue = {
       PoseStep(MotionType::GripperOpen),
-      PoseStep(ready_pose, 1, 0.8, false, 1000, MotionType::Joint),
-      PoseStep("green", 0.8, 0.3, false, 100, MotionType::Joint),
+      PoseStep(ready_pose, 1, 0.8, false, 0, MotionType::Joint),
+      PoseStep(high_pose_b, 0.8, 0.3, false, 0, MotionType::Joint),
+      PoseStep(low_pose_b, 0.5, 0.5, false, 0, MotionType::Joint),
       PoseStep(MotionType::GripperClose)
     };
     place_cube_left = {
-      PoseStep(center_cube_drop_hover, 1, 1, false, 100, MotionType::Joint),
-      PoseStep(left_cube_drop_hover, 0.6, 1, false, 100, MotionType::Joint),
-      PoseStep(left_cube_drop, 0.6, 1, true, 100, MotionType::Cartesian),
+      PoseStep(center_cube_drop_hover, 1, 1, false, 0, MotionType::Joint),
+      PoseStep(left_cube_drop_hover, 0.6, 1, false, 0, MotionType::Joint),
+      PoseStep(left_cube_drop, 0.6, 1, true, 0, MotionType::Cartesian),
       PoseStep(MotionType::GripperOpen)
     };
     place_cube_center = {
-      PoseStep(center_cube_drop_hover, 1, 1, false, 100, MotionType::Joint),
-      PoseStep(center_cube_drop, 0.6, 1, true, 100, MotionType::Cartesian),
+      PoseStep(center_cube_drop_hover, 1, 1, false, 0, MotionType::Joint),
+      PoseStep(center_cube_drop, 0.6, 1, true, 0, MotionType::Cartesian),
       PoseStep(MotionType::GripperOpen)
     };
     place_cube_right = {
-      PoseStep(center_cube_drop_hover, 1, 1, false, 100, MotionType::Joint),
-      PoseStep(right_cube_drop_hover, 0.6, 1, false, 100, MotionType::Joint),
-      PoseStep(right_cube_drop, 0.6, 1, true, 100, MotionType::Cartesian),
+      PoseStep(center_cube_drop_hover, 1, 1, false, 0, MotionType::Joint),
+      PoseStep(right_cube_drop_hover, 0.6, 1, false, 0, MotionType::Joint),
+      PoseStep(right_cube_drop, 0.6, 1, true, 0, MotionType::Cartesian),
       PoseStep(MotionType::GripperOpen)
     };
 
     mount_arm_sequence = {
       PoseStep(MotionType::GripperOpen),
-      PoseStep(ready_pose, 1, 0.8, false, 100, MotionType::Joint),
-      PoseStep(arm_pre_dock_v1, 1, 0.8, false, 100, MotionType::Joint),
-      PoseStep(arm_dock_v1, 0.8, 0.3, true, 100, MotionType::Cartesian),
+      PoseStep(ready_pose, 1, 0.8, false, 0, MotionType::Joint),
+      PoseStep(arm_pre_dock_v1, 1, 0.8, false, 0, MotionType::Joint),
+      PoseStep(arm_dock_v1, 0.8, 0.3, true, 0, MotionType::Cartesian),
+      PoseStep(arm_pre_dock_v1, 0.8, 0.3, true, 0, MotionType::Cartesian),
       PoseStep(MotionType::GripperClose),
-      PoseStep(arm_pre_dock_v1, 0.8, 0.3, true, 100, MotionType::Cartesian),
-      PoseStep(dock_ready, 1, 0.8, false, 100, MotionType::Joint)
+      PoseStep(dock_ready, 1, 0.8, false, 0, MotionType::Joint)
     };
     dock_arm_sequence = {
       PoseStep(MotionType::GripperClose),
-      PoseStep(ready_pose, 1, 0.8, false, 100, MotionType::Joint), 
-      PoseStep(arm_pre_dock_v1, 1, 0.8, false, 100, MotionType::Joint), 
-      PoseStep(arm_dock_v1, 0.8, 0.3, true, 100, MotionType::Cartesian),
+      PoseStep(ready_pose, 1, 0.8, false, 0, MotionType::Joint), 
+      PoseStep(arm_pre_dock_v1, 1, 0.8, false, 0, MotionType::Joint), 
       PoseStep(MotionType::GripperOpen),
-      PoseStep(arm_disengage, 1, 0.6, true, 100, MotionType::Cartesian),
-      PoseStep(ready_pose, 1, 0.8, false, 100, MotionType::Joint) 
+      PoseStep(arm_dock_v1, 0.8, 0.3, true, 0, MotionType::Cartesian),
+      PoseStep(arm_disengage, 1, 0.6, true, 0, MotionType::Cartesian), 
+      PoseStep(ready_pose, 1, 0.8, false, 0, MotionType::Joint) 
     };
 
-    move_tray_sequence = { 
-      // PoseStep(ready_pose, 1, 0.8, false, 100, MotionType::Joint),
-      // PoseStep(arm_pre_dock, 0.1, 0.8, false, 100, MotionType::Joint)
+    move_container_sequence = { 
+       PoseStep(align_with_container_v1, 1, 1, false, 0, MotionType::Joint),
+       PoseStep(pickup_container_v1, 1, 1, false, 0, MotionType::Joint),
+       PoseStep(lift_container_v1, 1, 1, false, 0, MotionType::Joint),
+       PoseStep(container_deliver_hover_v1, 1, 1, false, 0, MotionType::Joint),
+       PoseStep(container_deliver_dropoff_v1, 1, 1, false, 0, MotionType::Joint),
+       PoseStep(container_deliver_backoff_v1, 1, 1, false, 0, MotionType::Joint)
+
     };
   }
 
@@ -211,13 +239,14 @@ public:
       RCLCPP_INFO(rclcpp::get_logger("Gripper"), "Gripper closed.");
     }
   }
-  
+
   geometry_msgs::msg::Pose get_object_pose_by_color(
     const std::shared_ptr<rclcpp::Client<GetPosition>>& client,
     const std::string& color,
+    double desired_z,
     rclcpp::Logger logger,
     const std::shared_ptr<rclcpp::Node>& node)
-  {
+{
     if (!client->wait_for_service(std::chrono::seconds(3))) {
       RCLCPP_ERROR(logger, "GetPosition service not available.");
       return geometry_msgs::msg::Pose{};
@@ -225,6 +254,7 @@ public:
 
     auto request = std::make_shared<GetPosition::Request>();
     request->color = color;
+    request->desired_z = desired_z;
 
     auto future = client->async_send_request(request);
     if (rclcpp::spin_until_future_complete(node, future) != rclcpp::FutureReturnCode::SUCCESS) {
@@ -244,9 +274,9 @@ public:
     );
   }
 
-  void run_sequence(const std::vector<PoseStep>& sequence) {
+  void run_sequence(std::vector<PoseStep>& sequence) {
     for (size_t i = 0; i < sequence.size(); ++i) {
-      auto step = sequence[i];
+      auto& step = sequence[i]; 
 
       if (step.motion_type == MotionType::GripperOpen) {
         openGripper();
@@ -258,10 +288,17 @@ public:
         continue;
       }
 
-      // Dynamically fetch pose if this step uses a color
-      if (!step.target_color.empty()) {
-        step.pose = get_object_pose_by_color(client_, step.target_color, get_logger(), this->shared_from_this());
-      }
+    // Dynamically fetch pose if this step uses a color
+    if (!step.target_color.empty()) {
+      geometry_msgs::msg::Pose base_pose = get_object_pose_by_color(
+        client_, step.target_color, step.desired_z, get_logger(), this->shared_from_this());
+
+      step.pose = base_pose;
+    }
+
+      RCLCPP_INFO(get_logger(), "Target pose: x=%.3f y=%.3f z=%.3f (cartesian=%s)",
+            step.pose.position.x, step.pose.position.y, step.pose.position.z,
+            step.use_cartesian ? "true" : "false");
 
       move_group_->setPoseTarget(step.pose);
       move_group_->setMaxVelocityScalingFactor(step.velocity_scaling);
@@ -322,19 +359,16 @@ int main(int argc, char** argv)
   // Call init AFTER shared_ptr creation so shared_from_this() works
   node->init();
 
-  node->run_sequence(node->pick_red);
-  node->run_sequence(node->place_cube_center);
-  node->run_sequence(node->pick_blue);
-  node->run_sequence(node->place_cube_left);
-  node->run_sequence(node->pick_green);
-  node->run_sequence(node->place_cube_right); 
-  node->run_sequence(node->home); 
- // node->run_sequence(node->place_cube_2);
- // node->run_sequence(node->place_cube_3);
- // node->run_sequence(node->mount_arm_sequence);
- // rclcpp::sleep_for(2s);
- // node->run_sequence(node->dock_arm_sequence);
- // node->run_sequence(node->move_tray_sequence);
+   node->run_sequence(node->pick_red);
+   node->run_sequence(node->place_cube_center);
+   node->run_sequence(node->pick_blue);
+   node->run_sequence(node->place_cube_left);
+   node->run_sequence(node->pick_green);
+   node->run_sequence(node->place_cube_right); 
+   node->run_sequence(node->mount_arm_sequence);
+   node->run_sequence(node->move_container_sequence);
+   node->run_sequence(node->dock_arm_sequence);
+  
 
   rclcpp::spin(node);
   rclcpp::shutdown();
