@@ -3,7 +3,7 @@
 
 #include <geometry_msgs/msg/pose.hpp>
 
-
+//Poses for target aiming v1 (discarded)
 
 
 //-----------ready_pose---------------

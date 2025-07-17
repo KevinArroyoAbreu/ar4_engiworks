@@ -8,7 +8,7 @@
 #include <tf2/LinearMath/Quaternion.h>
 
 #include "position_tracker/srv/get_position.hpp"  
-#include </home/karroyabreu/ar4/src/programs_cpp/saved_poses/ar4PosesV2.hpp>
+#include </home/karroyabreu/ar4/src/programs_cpp/saved_poses/ar4PosesV3.hpp>
 
 //THIS IS A COPY OF CubeRoutine.cpp, but for target detection
 
@@ -70,7 +70,7 @@ geometry_msgs::msg::Pose create_pose_from_xyz_yaw(double x, double y, double z, 
   pose.position.y = y / 1000.0;
   pose.position.z = z / 1000.0;
 
-  double corrected_yaw = yaw - M_PI_2;
+  double corrected_yaw = yaw;//yam - M_PI_2
   double pitch_angle = M_PI;
   double roll_angle = 0;
 
@@ -107,10 +107,11 @@ public:
   std::vector<PoseStep> pick_red;
   std::vector<PoseStep> pick_blue;
   std::vector<PoseStep> pick_green;
-  std::vector<PoseStep> place_cube_red;
-  std::vector<PoseStep> place_cube_blue;
-  std::vector<PoseStep> place_cube_green;
+  std::vector<PoseStep> place_cube_left;
+  std::vector<PoseStep> place_cube_center;
+  std::vector<PoseStep> place_cube_right;
   std::vector<PoseStep> home;
+  std::vector<PoseStep> clear_from_container;
 
   std::vector<PoseStep> mount_arm_sequence;
   std::vector<PoseStep> dock_arm_sequence;
@@ -130,9 +131,12 @@ public:
     // ======================================================================================================================
     // ================================== PROGRAM SEQUENCES =================================================================
     // ======================================================================================================================
+    float speed = 1.0;
+    float acceleration = 0.8;
+    
     home = {
       PoseStep(MotionType::GripperOpen),
-      PoseStep(ready_pose, 1, 0.8, false, 0, MotionType::Joint),
+      PoseStep(ready_pose, speed, acceleration, false, 0, MotionType::Joint),
     };
 
     // Define the hover and drop poses for red cube
@@ -142,8 +146,8 @@ public:
 
     pick_red = {
       PoseStep(MotionType::GripperOpen),
-      PoseStep(high_pose_r, 0.8, 0.3, false, 0, MotionType::Joint),
-      PoseStep(low_pose_r, 0.5, 0.5, true, 0, MotionType::Cartesian),
+      PoseStep(high_pose_r, speed, acceleration, false, 0, MotionType::Joint),
+      PoseStep(low_pose_r, speed, acceleration, true, 0, MotionType::Cartesian),
       PoseStep(MotionType::GripperClose)
     };
 
@@ -154,8 +158,8 @@ public:
 
     pick_green = {
       PoseStep(MotionType::GripperOpen),
-      PoseStep(high_pose_g, 0.8, 0.3, false, 0, MotionType::Joint),
-      PoseStep(low_pose_g, 0.5, 0.5, true, 0, MotionType::Cartesian),
+      PoseStep(high_pose_g, speed, acceleration, false, 0, MotionType::Joint),
+      PoseStep(low_pose_g, speed, acceleration, true, 0, MotionType::Cartesian),
       PoseStep(MotionType::GripperClose)
     };
 
@@ -166,77 +170,58 @@ public:
 
     pick_blue = {
       PoseStep(MotionType::GripperOpen),
-      PoseStep(high_pose_b, 0.8, 0.3, false, 0, MotionType::Joint),
-      PoseStep(low_pose_b, 0.5, 0.5, false, 0, MotionType::Joint),
+      PoseStep(high_pose_b, speed, acceleration, false, 0, MotionType::Joint),
+      PoseStep(low_pose_b, speed, acceleration, false, 0, MotionType::Joint),
       PoseStep(MotionType::GripperClose)
     };
 
-    // Sequences for placing red cube on red target
-    geometry_msgs::msg::Pose high_pose_rpl = get_object_pose_by_color(client_, "red_target", 250.0, get_logger(), this->shared_from_this());
-    high_pose_rpl.position.y += 0.300;
-    geometry_msgs::msg::Pose low_pose_rpl = high_pose_rpl;
-    low_pose_rpl.position.z = 0.200;
-
-    place_cube_red = {
-      PoseStep(pre_cube_drop, 1, 1, false, 0, MotionType::Joint),
-      PoseStep(high_pose_rpl, 0.6, 1, false, 0, MotionType::Joint),
-      PoseStep(low_pose_rpl, 0.6, 1, true, 0, MotionType::Cartesian),
+    place_cube_left = {
+      PoseStep(center_cube_drop_hover, speed, acceleration, false, 0, MotionType::Joint),
+      PoseStep(left_cube_drop_hover, speed, acceleration, false, 0, MotionType::Joint),
+      PoseStep(left_cube_drop, speed, acceleration, true, 0, MotionType::Cartesian),
       PoseStep(MotionType::GripperOpen)
     };
-
-    // Sequences for placing blue cube on blue target
-    geometry_msgs::msg::Pose high_pose_bpl = get_object_pose_by_color(client_, "blue_target", 250.0, get_logger(), this->shared_from_this());
-    high_pose_bpl.position.y += 0.300;
-    geometry_msgs::msg::Pose low_pose_bpl = high_pose_bpl;
-    low_pose_bpl.position.z = 0.200;
-
-    place_cube_blue = {
-      PoseStep(pre_cube_drop, 1, 1, false, 0, MotionType::Joint),
-      PoseStep(high_pose_bpl, 1, 1, false, 0, MotionType::Joint),
-      PoseStep(low_pose_bpl, 0.6, 1, true, 0, MotionType::Cartesian),
+    place_cube_center = {
+      PoseStep(center_cube_drop_hover, speed, acceleration, false, 0, MotionType::Joint),
+      PoseStep(center_cube_drop, speed, acceleration, true, 0, MotionType::Cartesian),
       PoseStep(MotionType::GripperOpen)
     };
-
-    // Sequences for placing green cube on green target
-    geometry_msgs::msg::Pose high_pose_gpl = get_object_pose_by_color(client_, "green_target", 250.0, get_logger(), this->shared_from_this());
-    high_pose_gpl.position.y += 0.300;
-    geometry_msgs::msg::Pose low_pose_gpl = high_pose_gpl;
-    low_pose_gpl.position.z = 0.200;
-
-    place_cube_green = {
-      PoseStep(pre_cube_drop, 1, 1, false, 0, MotionType::Joint),
-      PoseStep(high_pose_gpl, 0.6, 1, false, 0, MotionType::Joint),
-      PoseStep(low_pose_gpl, 0.6, 1, true, 0, MotionType::Cartesian),
+    place_cube_right = {
+      PoseStep(center_cube_drop_hover, speed, acceleration, false, 0, MotionType::Joint),
+      PoseStep(right_cube_drop_hover, speed, acceleration, false, 0, MotionType::Joint),
+      PoseStep(right_cube_drop, speed, acceleration, false, 0, MotionType::Joint),
       PoseStep(MotionType::GripperOpen)
+    };
+    clear_from_container = {
+      PoseStep(MotionType::GripperOpen),
+      PoseStep(container_clearance_pose, speed, acceleration, false, 0, MotionType::Joint),
     };
 
     // Sequences for mounting and docking the arm
     mount_arm_sequence = {
       PoseStep(MotionType::GripperOpen),
-      PoseStep(ready_pose, 1, 0.8, false, 0, MotionType::Joint),
-      PoseStep(arm_pre_dock_v1, 1, 0.8, false, 0, MotionType::Joint),
-      PoseStep(arm_dock_v1, 0.8, 0.3, true, 0, MotionType::Cartesian),
-      PoseStep(arm_pre_dock_v1, 0.8, 0.3, true, 0, MotionType::Cartesian),
+      PoseStep(arm_pre_dock_v1, speed, acceleration, false, 0, MotionType::Joint),
+      PoseStep(arm_dock_v1, speed, acceleration, true, 0, MotionType::Cartesian),
+      PoseStep(arm_pre_dock_v1, speed, acceleration, true, 0, MotionType::Cartesian),
       PoseStep(MotionType::GripperClose),
-      PoseStep(dock_ready, 1, 0.8, false, 0, MotionType::Joint)
+      PoseStep(dock_ready, speed, acceleration, false, 0, MotionType::Joint)
     };
     dock_arm_sequence = {
       PoseStep(MotionType::GripperClose),
-      PoseStep(ready_pose, 1, 0.8, false, 0, MotionType::Joint), 
-      PoseStep(arm_pre_dock_v1, 1, 0.8, false, 0, MotionType::Joint), 
+      PoseStep(arm_pre_dock_v1, speed, acceleration, false, 0, MotionType::Joint), 
       PoseStep(MotionType::GripperOpen),
-      PoseStep(arm_dock_v1, 0.8, 0.3, true, 0, MotionType::Cartesian),
-      PoseStep(arm_disengage, 1, 0.6, true, 0, MotionType::Cartesian), 
-      PoseStep(ready_pose, 1, 0.8, false, 0, MotionType::Joint) 
+      PoseStep(arm_dock_v1, speed, acceleration, true, 0, MotionType::Cartesian),
+      PoseStep(arm_disengage, speed, acceleration, true, 0, MotionType::Cartesian) 
+     // PoseStep(ready_pose, speed, acceleration, false, 0, MotionType::Joint) 
     };
     // Sequence for moving the container
     move_container_sequence = { 
-       PoseStep(align_with_container_v1, 1, 1, false, 0, MotionType::Joint),
-       PoseStep(pickup_container_v1, 1, 1, false, 0, MotionType::Joint),
-       PoseStep(lift_container_v1, 1, 1, false, 0, MotionType::Joint),
-       PoseStep(container_deliver_hover_v1, 1, 1, false, 0, MotionType::Joint),
-       PoseStep(container_deliver_dropoff_v1, 1, 1, false, 0, MotionType::Joint),
-       PoseStep(container_deliver_backoff_v1, 1, 1, false, 0, MotionType::Joint)
+       PoseStep(align_with_container, speed, acceleration, false, 0, MotionType::Joint),
+       PoseStep(pickup_container,speed, acceleration, true, 0, MotionType::Cartesian),
+       PoseStep(lift_container, speed, acceleration, false, 0, MotionType::Joint),
+       PoseStep(container_deliver_hover, speed, acceleration, false, 0, MotionType::Joint),
+       PoseStep(container_deliver_dropoff, speed, acceleration, false, 0, MotionType::Joint),
+       PoseStep(container_deliver_backoff, speed, acceleration, false, 0, MotionType::Joint)
 
     };
   }
@@ -391,16 +376,18 @@ int main(int argc, char** argv)
 
    node->run_sequence(node->home);
    node->run_sequence(node->pick_red);
-   node->run_sequence(node->place_cube_blue);
+   node->run_sequence(node->place_cube_center);
    node->run_sequence(node->home);
    node->run_sequence(node->pick_blue);
-   node->run_sequence(node->place_cube_red);
+   node->run_sequence(node->place_cube_left);
    node->run_sequence(node->home);
    node->run_sequence(node->pick_green);
-   node->run_sequence(node->place_cube_green); 
+   node->run_sequence(node->place_cube_right); 
+   node->run_sequence(node->clear_from_container);
    node->run_sequence(node->mount_arm_sequence);
    node->run_sequence(node->move_container_sequence);
    node->run_sequence(node->dock_arm_sequence);
+   node->run_sequence(node->home);
   
 
   rclcpp::spin(node);
