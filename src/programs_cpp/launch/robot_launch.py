@@ -20,22 +20,22 @@ def generate_launch_description():
     # )
 
     # This is the rviz moveit configuration
-    moveit_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory('annin_ar4_moveit_config'),
-                'launch',
-                'moveit.launch.py'
-            )
-        )
-    )
+    # moveit_launch = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource(
+    #         os.path.join(
+    #             get_package_share_directory('annin_ar4_moveit_config'),
+    #             'launch',
+    #             'moveit.launch.py'
+    #         )
+    #     )
+    # )
 
     # Activate the camera node (change video channel if needed)
     camera_node = Node(
         package='v4l2_camera',
         executable='v4l2_camera_node',
         name='v4l2_camera',
-        parameters=[{'video_device': '/dev/video4'}],
+        parameters=[{'video_device': '/dev/video5'}],
         remappings=[('image_raw', '/webcam/image_raw')]
     )
 
@@ -52,7 +52,7 @@ def generate_launch_description():
     # Create the launch description and populate
     return LaunchDescription([
         #driver_launch,
-        moveit_launch,
+       # moveit_launch,
         camera_node,
         get_position_server
     ])

@@ -8,12 +8,14 @@ from moveit_configs_utils import MoveItConfigsBuilder
 def generate_launch_description():
     # Setup MoveIt config
     moveit_config = (
-        MoveItConfigsBuilder("moveit_resources_ar4")
-        .robot_description(file_path="urdf/ar_macro.xacro")  # relative to description package
-        .trajectory_execution(file_path="config/controllers.yaml")
+        MoveItConfigsBuilder("annin_ar4")
+        .robot_description("urdf/fake_ar.urdf.xacro")
+        .semantic_robot_description("srdf/annin_ar4.srdf")
+        .trajectory_execution("config/controllers.yaml")
         .planning_pipelines(["ompl", "chomp", "pilz_industrial_motion_planner"])
         .to_moveit_configs()
     )
+
 
     # Capabilities for task execution
     move_group_capabilities = {

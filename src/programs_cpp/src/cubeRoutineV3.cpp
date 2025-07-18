@@ -11,6 +11,8 @@
 
 #include <tf2/LinearMath/Quaternion.h>
 #include <moveit/planning_scene/planning_scene.h>
+#include <moveit_task_constructor_msgs/msg/solution.hpp>
+
 //#include <moveit/planning_scene_interface/planning_scene_interface.hpp>
 #include <moveit/task_constructor/task.h>
 #include <moveit/task_constructor/solvers.h>
@@ -42,12 +44,21 @@ using GetPosition = position_tracker::srv::GetPosition;
 namespace mtc = moveit::task_constructor;
 
 
+
 class MTCTaskNode 
 {
 public:
   MTCTaskNode(const rclcpp::NodeOptions& options);
 
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr getNodeBaseInterface();
+  std::unique_ptr<moveit::planning_interface::MoveGroupInterface> move_group_;
+  rclcpp::Publisher<moveit_task_constructor_msgs::msg::Solution>::SharedPtr solution_pub_;
+  rclcpp::Node::SharedPtr getNode() const {
+    return node_;
+  }
+  std::string planning_plugin_name;
+  
+
 
   void doTask();
 
@@ -60,6 +71,7 @@ private:
   mtc::Task task_;
   rclcpp::Node::SharedPtr node_;
   std::map<std::string, geometry_msgs::msg::PoseStamped> place_poses;
+  
 
 };
 
@@ -71,9 +83,29 @@ rclcpp::node_interfaces::NodeBaseInterface::SharedPtr MTCTaskNode::getNodeBaseIn
 
 //Initialize node with specified options
 MTCTaskNode::MTCTaskNode(const rclcpp::NodeOptions& options)
-  : node_{ std::make_shared<rclcpp::Node>("mtc_program_node", options) }
-{
-}
+    : node_{ std::make_shared<rclcpp::Node>("mtc_program_node", options) }
+  {
+    // Always set a valid default
+    planning_plugin_name = "ompl_interface/OMPLPlanner";
+    
+
+    RCLCPP_INFO(node_->get_logger(), "Using planning plugin: %s", planning_plugin_name.c_str());
+
+    while (!node_->has_parameter("robot_description")) {
+      RCLCPP_INFO(node_->get_logger(), "Waiting for robot_description parameter...");
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    move_group_ = std::make_unique<moveit::planning_interface::MoveGroupInterface>(node_, "ar_manipulator");
+    solution_pub_ = node_->create_publisher<moveit_task_constructor_msgs::msg::Solution>(
+      "/moveit_task_constructor/solution", 10);
+
+    if (!move_group_) {
+      RCLCPP_ERROR(node_->get_logger(), "Failed to create MoveGroupInterface");
+      return;
+    }
+    RCLCPP_INFO(node_->get_logger(), "MoveGroupInterface created successfully");
+  }
 
 //Interface with the MoveIt Task Constructor
 
@@ -131,13 +163,14 @@ void MTCTaskNode::doTask()// DO TASK DO TASK ===================//
   auto task = createTask(x,y,z,yaw,color);
   try {
     task.init();
-    if (!task.plan(5)) {
-      RCLCPP_ERROR(node_->get_logger(), "Planning failed for %s", color.c_str());
-      continue;
+    if (task.plan(5)) {
+      auto solution = task.solutions().front();
+      task.execute(*solution);
+    } else {
+      RCLCPP_ERROR(node_->get_logger(), "Planning failed");
     }
-    task.execute(*task.solutions().front());
   } catch (const std::exception &ex) {
-    RCLCPP_ERROR(node_->get_logger(), "Exception: %s", ex.what());
+    RCLCPP_ERROR_STREAM(node_->get_logger(), "Exception: " << ex.what());
   }
 }
 
@@ -155,8 +188,10 @@ mtc::Task MTCTaskNode::createTask(double x, double y, double z, double yaw, cons
   task.setProperty("group", "ar_manipulator");
   task.setProperty("eef", "ar_gripper");
   task.setProperty("ik_frame", "gripper_base_link");
-  //task.setProperty("planning_plugin", "ompl_interface/OMPLPlanner");
- // task.setProperty("planning_pipeline", "ompl");
+  // Explicitly set both properties
+  task.setProperty("planning_plugin", "ompl_interface/OMPLPlanner");
+  task.setProperty("planning_pipeline", "ompl");
+
 
 
   geometry_msgs::msg::PoseStamped place_pose = place_poses[color];
@@ -164,143 +199,147 @@ mtc::Task MTCTaskNode::createTask(double x, double y, double z, double yaw, cons
 
 
   // Current state
-  task.add(std::make_unique<mtc::stages::CurrentState>("current"));
-
-  // Open gripper
-  task.add(std::make_unique<mtc::stages::MoveTo>("open",
-           std::make_shared<mtc::solvers::JointInterpolationPlanner>()));
+  try {
+    RCLCPP_INFO(node_->get_logger(), "Adding stage: CurrentState");
+    task.add(std::make_unique<mtc::stages::CurrentState>("current"));
+    RCLCPP_INFO(node_->get_logger(), "Added stage: CurrentState");
+  } catch (const std::exception& ex) {
+    RCLCPP_ERROR_STREAM(node_->get_logger(), "Error adding CurrentState: " << ex.what());
+  }
 
   // Move to pre-grasp
-  task.add(std::make_unique<mtc::stages::Connect>("move to pick",
-           mtc::stages::Connect::GroupPlannerVector{
-             {"ar_manipulator", std::make_shared<mtc::solvers::PipelinePlanner>(node_)} }
-  ));
+  try {
+    task.add(std::make_unique<mtc::stages::Connect>("move to pick",
+             mtc::stages::Connect::GroupPlannerVector{
+               {"ar_manipulator", std::make_shared<mtc::solvers::PipelinePlanner>(node_, "ompl")} }
+    ));
+  } catch (const std::exception& ex) {
+    RCLCPP_ERROR_STREAM(node_->get_logger(), "Error adding Connect (move to pick): " << ex.what());
+  }
 
   // Grasp container
-  auto grasp = std::make_unique<mtc::SerialContainer>("pick object");
+  try {
+    auto grasp = std::make_unique<mtc::SerialContainer>("pick object");
+    task.properties().exposeTo(grasp->properties(), { "eef", "group", "ik_frame" });
+    grasp->properties().configureInitFrom(mtc::Stage::PARENT, { "eef", "group", "ik_frame" });
 
-  task.properties().exposeTo(grasp->properties(), { "eef", "group", "ik_frame" });
-  grasp->properties().configureInitFrom(mtc::Stage::PARENT, { "eef", "group", "ik_frame" });
+    // Approach
+    {
+      auto stage = std::make_unique<mtc::stages::MoveRelative>("approach",
+        std::make_shared<mtc::solvers::CartesianPath>());
+      stage->properties().configureInitFrom(mtc::Stage::PARENT, {"group"});
+      geometry_msgs::msg::Vector3Stamped dir;
+      dir.header.frame_id = "gripper_base_link";
+      dir.vector.z = 1.0;
+      stage->setDirection(dir);
+      stage->setMinMaxDistance(0.1, 0.15);
+      grasp->insert(std::move(stage));
+    }
+    // Set pick pose
+    {
+      geometry_msgs::msg::PoseStamped pick;
+      pick.header.frame_id = "world";
+      pick.pose.position.x = x;
+      pick.pose.position.y = y;
+      pick.pose.position.z = z;
+      Eigen::AngleAxisd yaw_angle(yaw, Eigen::Vector3d::UnitZ());
+      Eigen::Quaterniond q(yaw_angle);
+      pick.pose.orientation = tf2::toMsg(q);
 
-
-
-  // grasp->properties().exposeTo(grasp->properties(), {"eef","group","ik_frame"});
-  // Approach
-  {
-    auto stage = std::make_unique<mtc::stages::MoveRelative>("approach",
-      std::make_shared<mtc::solvers::CartesianPath>());
-    stage->properties().configureInitFrom(mtc::Stage::PARENT, {"group"});
-    geometry_msgs::msg::Vector3Stamped dir;
-    dir.header.frame_id = "gripper_base_link";
-    dir.vector.z = 1.0;
-    stage->setDirection(dir);
-    stage->setMinMaxDistance(0.1, 0.15);
-    grasp->insert(std::move(stage));
+      auto gen = std::make_unique<mtc::stages::GeneratePose>("gen_pick");
+      gen->setPose(pick);
+      auto m = std::make_unique<mtc::stages::MoveTo>("move to pick",
+               std::make_shared<mtc::solvers::PipelinePlanner>(node_, "ompl"));
+      m->setGroup("ar_manipulator");
+      m->setGoal(pick);
+      grasp->insert(std::move(gen));
+      grasp->insert(std::move(m));
+    }
+    // Lift object
+    {
+      auto lift = std::make_unique<mtc::stages::MoveRelative>("lift",
+        std::make_shared<mtc::solvers::CartesianPath>());
+      lift->properties().configureInitFrom(mtc::Stage::PARENT, {"group"});
+      geometry_msgs::msg::Vector3Stamped dir;
+      dir.header.frame_id = "world";
+      dir.vector.z = 1.0;
+      lift->setDirection(dir);
+      lift->setMinMaxDistance(0.1, 0.3);
+      grasp->insert(std::move(lift));
+    }
+    task.add(std::move(grasp));
+  } catch (const std::exception& ex) {
+    RCLCPP_ERROR_STREAM(node_->get_logger(), "Error adding SerialContainer (pick object): " << ex.what());
   }
-  // Set pick pose
-  {
-    geometry_msgs::msg::PoseStamped pick;
-    pick.header.frame_id = "world";
-    pick.pose.position.x = x;
-    pick.pose.position.y = y;
-    pick.pose.position.z = z;
-    Eigen::AngleAxisd yaw_angle(yaw, Eigen::Vector3d::UnitZ());
-    Eigen::Quaterniond q(yaw_angle);
-    pick.pose.orientation = tf2::toMsg(q);
-
-
-    auto gen = std::make_unique<mtc::stages::GenerateGraspPose>("gen_pick");
-    gen->setPose(pick);
-    auto m = std::make_unique<mtc::stages::MoveTo>("move to pick",
-             std::make_shared<mtc::solvers::PipelinePlanner>(node_));
-    grasp->insert(std::move(gen));
-    grasp->insert(std::move(m));
-  }
-  // Close
-  {
-    // grasp->insert(std::make_unique<mtc::stages::MoveTo>("closed",
-    //   std::make_shared<mtc::solvers::JointInterpolationPlanner>()));
-   // auto attach = std::make_unique<mtc::stages::ModifyPlanningScene>("attach");
-    //attach->attachObject("object", "gripper_base_link");
-
-
-    // auto close = std::make_unique<mtc::stages::MoveTo>("closed", interpolation_planner);
-    // close->setGroup("ar_gripper");
-    // close->setGoal("closed");
-    // grasp->insert(std::move(close));
-
-    auto close = std::make_unique<mtc::stages::MoveTo>("close hand", std::make_shared<mtc::solvers::JointInterpolationPlanner>());
-    close->setGroup("ar_gripper");
-    close->setGoal("closed");
-    grasp->insert(std::move(close));
-
-    // task.add(std::make_unique<mtc::stages::MoveTo>("closed",
-    //        std::make_shared<mtc::solvers::JointInterpolationPlanner>()));
-  }
-  // Lift object
-  {
-    auto lift = std::make_unique<mtc::stages::MoveRelative>("lift",
-      std::make_shared<mtc::solvers::CartesianPath>());
-    lift->properties().configureInitFrom(mtc::Stage::PARENT, {"group"});
-    geometry_msgs::msg::Vector3Stamped dir;
-    dir.header.frame_id = "world";
-    dir.vector.z = 1.0;
-    lift->setDirection(dir);
-    lift->setMinMaxDistance(0.1, 0.3);
-    grasp->insert(std::move(lift));
-  }
-  task.add(std::move(grasp));
 
   // Move to place
-  task.add(std::make_unique<mtc::stages::Connect>("move to place",
-           mtc::stages::Connect::GroupPlannerVector{
-             {"ar_manipulator", std::make_shared<mtc::solvers::PipelinePlanner>(node_)},
-             {"ar_gripper", std::make_shared<mtc::solvers::PipelinePlanner>(node_)} }
-  ));
+  try {
+    task.add(std::make_unique<mtc::stages::Connect>("move to place",
+             mtc::stages::Connect::GroupPlannerVector{
+               {"ar_manipulator", std::make_shared<mtc::solvers::PipelinePlanner>(node_, "ompl")}
+              }
+    ));
+  } catch (const std::exception& ex) {
+    RCLCPP_ERROR_STREAM(node_->get_logger(), "Error adding Connect (move to place): " << ex.what());
+  }
 
   // Place container
-  auto place = std::make_unique<mtc::SerialContainer>("place object");
-
-  task.properties().exposeTo(place->properties(), { "eef", "group", "ik_frame" });
-  place->properties().configureInitFrom(mtc::Stage::PARENT, { "eef", "group", "ik_frame" });
-
-
- 
-  place->properties().exposeTo(place->properties(), {"eef","group","ik_frame"});
-  {
-    // Place pose
-    
-    auto gen = std::make_unique<mtc::stages::GeneratePlacePose>("gen_place");
-    gen->setPose(place_pose);
-    auto m = std::make_unique<mtc::stages::MoveTo>("move to place",
-             std::make_shared<mtc::solvers::PipelinePlanner>(node_));
-    place->insert(std::move(gen));
-    place->insert(std::move(m));
+  try {
+    auto place = std::make_unique<mtc::SerialContainer>("place object");
+    task.properties().exposeTo(place->properties(), { "eef", "group", "ik_frame" });
+    place->properties().configureInitFrom(mtc::Stage::PARENT, { "eef", "group", "ik_frame" });
+    place->properties().exposeTo(place->properties(), {"eef","group","ik_frame"});
+    {
+      auto gen = std::make_unique<mtc::stages::GeneratePose>("gen_place");
+      gen->setPose(place_pose);
+      place->insert(std::move(gen));
+      try {
+        auto m = std::make_unique<mtc::stages::MoveTo>("move to place",
+            std::make_shared<mtc::solvers::PipelinePlanner>(node_, "ompl"));
+        m->setGroup("ar_manipulator");
+        m->setGoal(place_pose);
+        place->insert(std::move(m));
+      } catch (const std::exception& ex) {
+        RCLCPP_ERROR_STREAM(node_->get_logger(), "Error initializing MoveTo stage 'move to place': " << ex.what());
+      }
+    }
+    // Open & retreat (no detach)
+    try {
+      auto open = std::make_unique<mtc::stages::MoveTo>("open", std::make_shared<mtc::solvers::JointInterpolationPlanner>());
+      open->setGroup("ar_gripper");
+      open->setGoal("open");
+      place->insert(std::move(open));
+    } catch (const std::exception& ex) {
+      RCLCPP_ERROR_STREAM(node_->get_logger(), "Error initializing MoveTo stage 'open': " << ex.what());
+    }
+    try {
+      auto retreat = std::make_unique<mtc::stages::MoveRelative>("retreat",
+        std::make_shared<mtc::solvers::CartesianPath>());
+      retreat->properties().configureInitFrom(mtc::Stage::PARENT, {"group"});
+      geometry_msgs::msg::Vector3Stamped dir;
+      dir.header.frame_id = "world";
+      dir.vector.x = -0.5;
+      retreat->setDirection(dir);
+      retreat->setMinMaxDistance(0.1, 0.3);
+      place->insert(std::move(retreat));
+    } catch (const std::exception& ex) {
+      RCLCPP_ERROR_STREAM(node_->get_logger(), "Error initializing MoveRelative stage 'retreat': " << ex.what());
+    }
+    task.add(std::move(place));
+  } catch (const std::exception& ex) {
+    RCLCPP_ERROR_STREAM(node_->get_logger(), "Error adding SerialContainer (place object): " << ex.what());
   }
-  // Open, detach & retreat
-  place->insert(std::make_unique<mtc::stages::MoveTo>("open",
-    std::make_shared<mtc::solvers::JointInterpolationPlanner>()));
-  {
-    auto detach = std::make_unique<mtc::stages::ModifyPlanningScene>("detach");
-    detach->detachObject("object", "gripper_base_link");
-    place->insert(std::move(detach));
-  }
-  {
-    auto retreat = std::make_unique<mtc::stages::MoveRelative>("retreat",
-      std::make_shared<mtc::solvers::CartesianPath>());
-    retreat->properties().configureInitFrom(mtc::Stage::PARENT, {"group"});
-    geometry_msgs::msg::Vector3Stamped dir;
-    dir.header.frame_id = "world";
-    dir.vector.x = -0.5;
-    retreat->setDirection(dir);
-    retreat->setMinMaxDistance(0.1, 0.3);
-    place->insert(std::move(retreat));
-  }
-  task.add(std::move(place));
 
   // Return home
-  task.add(std::make_unique<mtc::stages::MoveTo>("return home",
-    std::make_shared<mtc::solvers::JointInterpolationPlanner>()));
+  try {
+    auto home = std::make_unique<mtc::stages::MoveTo>("return home",
+      std::make_shared<mtc::solvers::JointInterpolationPlanner>());
+    home->setGroup("ar_manipulator");
+    home->setGoal("home");
+    task.add(std::move(home));
+  } catch (const std::exception& ex) {
+    RCLCPP_ERROR_STREAM(node_->get_logger(), "Error initializing MoveTo stage 'return home': " << ex.what());
+  }
   return task;
 }
 
@@ -315,14 +354,20 @@ int main(int argc, char** argv) {
 
   rclcpp::NodeOptions options;
   options.automatically_declare_parameters_from_overrides(true);
+  
   auto mtc_task_node = std::make_shared<MTCTaskNode>(options);
 
-  // No executor, just run directly
+  // Remove executor and add_node:
+  // rclcpp::executors::SingleThreadedExecutor executor;
+  // executor.add_node(mtc_task_node->getNode());
+
+  // Run task (which calls spin_until_future_complete internally)
   mtc_task_node->doTask();
 
   rclcpp::shutdown();
   return 0;
 }
+
 
 
  // mtc_task_node->setupPlanningScene();
@@ -336,4 +381,3 @@ int main(int argc, char** argv) {
 
 
 
-    
