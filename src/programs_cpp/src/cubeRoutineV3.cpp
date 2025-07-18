@@ -27,9 +27,11 @@
 
 
 
-//THIS IS A COPY OF CubeRoutine.cpp, but for target detection
+//THIS IS A COPY OF CubeRoutine.cpp, but for target detection - subscribes to v1 get_position_server
 // THE FOLLOWING ROUTINE USES CACHED PLANS FOR FASTER EXECUTION
 // ---- TARGETS ARE USED ONLY FOR KNOWING WHICH CUBE TO PLACE WHERE
+
+//https://moveit.picknik.ai/humble/doc/tutorials/pick_and_place_with_moveit_task_constructor/pick_and_place_with_moveit_task_constructor.html
 
 using GetPosition = position_tracker::srv::GetPosition;
 
@@ -46,7 +48,8 @@ public:
 
 private:
   // Compose an MTC task from a series of stages.
-  mtc::Task createTask();
+  mtc::Task createTask(double x, double y, double z, double yaw, const std::string& color); 
+
   mtc::Task task_;
   rclcpp::Node::SharedPtr node_;
 };
@@ -84,34 +87,12 @@ void MTCTaskNode::setupPlanningScene()
 
 //Interface with the MoveIt Task Constructor
 
-void MTCTaskNode::doTask()
+void MTCTaskNode::doTask()// DO TASK DO TASK ===================//
 {
   //task_ = createTask();
   //task for pick and place
   task_ = createTask(x, y, z, yaw);
-  //This is for the position server (using v1 first)
-  auto client = node_->create_client<GetPosition>("/get_position");
 
-  if (!client->wait_for_service(std::chrono::seconds(5))) {
-    RCLCPP_ERROR(node_->get_logger(), "Position service not available");
-    return;
-  }
-
-  auto request = std::make_shared<GetPosition::Request>();
-  request->color = "red";         // or dynamically choose
-  request->desired_z = 80.0;      // desired z height
-
-  auto future = client->async_send_request(request);
-  if (rclcpp::spin_until_future_complete(node_, future) != rclcpp::FutureReturnCode::SUCCESS) {
-    RCLCPP_ERROR(node_->get_logger(), "Failed to call get_position service");
-    return;
-  }
-
-  auto response = future.get();
-  double x = response->x_position / 1000.0;  // convert mm to meters
-  double y = response->y_position / 1000.0;
-  double z = response->z_position / 1000.0;
-  double yaw = response->yaw;
 
   //MTC setup
   try
@@ -138,12 +119,72 @@ void MTCTaskNode::doTask()
     return;
   }
 
+  //LOOP PATTERN FOR COLOR CUBE PICKING
+  //This is for the position server (using v1 first)
+  std::vector<std::string> colors = { "green", "blue", "red" };
+
+  // Define place positions for each color (PLACE POSES)
+  std::map<std::string, geometry_msgs::msg::PoseStamped> place_poses;
+  for (const auto& color : colors) {
+    geometry_msgs::msg::PoseStamped pose;
+    pose.header.frame_id = "world";
+    pose.pose.position.x = 0.5;
+    pose.pose.position.y = (color == "red") ? -0.3 : (color == "green") ? 0.0 : 0.3;
+    pose.pose.position.z = 0.1;
+    pose.pose.orientation.w = 1.0;
+    place_poses[color] = pose;
+  }
+
+  // ROS2 service client
+  auto client = node_->create_client<GetPosition>("/get_position");
+
+  for (const auto& color : colors) {
+    // Request object pose
+    auto req = std::make_shared<GetPosition::Request>();
+    req->color = color;
+    req->desired_z = 80.0;
+
+    if (!client->wait_for_service(std::chrono::seconds(3))) {
+      RCLCPP_ERROR(node_->get_logger(), "Service unavailable");
+      continue;
+    }
+
+    auto future = client->async_send_request(req);
+    if (rclcpp::spin_until_future_complete(node_, future) != rclcpp::FutureReturnCode::SUCCESS) {
+      RCLCPP_WARN(node_->get_logger(), "Failed to get position for %s", color.c_str());
+      continue;
+    }
+
+    auto res = future.get();
+    double x = res->x_position / 1000.0;  // Convert mm → m
+    double y = res->y_position / 1000.0;
+    double z = res->z_position / 1000.0;
+    double yaw = res->yaw;
+
+    // Build task for this object
+    task_ = createTask(x, y, z, yaw, place_poses[color]);
+
+    try {
+      task_.init();
+      if (!task_.plan(5)) {
+        RCLCPP_ERROR(node_->get_logger(), "Planning failed for %s", color.c_str());
+        continue;
+      }
+      task_.execute(*task_.solutions().front());
+    } catch (const std::exception& e) {
+      RCLCPP_ERROR(node_->get_logger(), "Exception in task execution: %s", e.what());
+    }
+  }
+
+  
+
   return;
 }
 
 
 // Object - sets some initial properties for the task
-mtc::Task MTCTaskNode::createTask(double x, double y, double z, double yaw)
+mtc::Task MTCTaskNode::createTask(double x, double y, double z, double yaw, const std::string& color)
+
 {
   moveit::task_constructor::Task task;
   task.stages()->setName("cube routine");
@@ -166,6 +207,8 @@ mtc::Task MTCTaskNode::createTask(double x, double y, double z, double yaw)
   auto stage_state_current = std::make_unique<mtc::stages::CurrentState>("current");
   current_state_ptr = stage_state_current.get();
   task.add(std::move(stage_state_current));
+
+
   
   // SOLVER OPTIONS:
   // 1) PipelinePlanner (OMPL)
@@ -267,12 +310,15 @@ mtc::Task MTCTaskNode::createTask(double x, double y, double z, double yaw)
   Eigen::Quaterniond q = Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitX()) *
                         Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitY()) *
                         Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitZ());
+/* The above code snippet is part of a C++ program that is likely part of a robotic manipulation task
+planning system. Here is a breakdown of what the code is doing: */
   grasp_frame_transform.linear() = q.matrix();
   grasp_frame_transform.translation().z() = 0.1;
 
   // Compute Ik stage - added to serial container
   auto wrapper =
-      std::make_unique<mtc::stages::ComputeIK>("grasp pose IK", std::move(stage));
+    std::make_unique<mtc::stages::ComputeIK>("place pose IK", std::move(place_pose_stage));  
+ 
   wrapper->setMaxIKSolutions(8);
   wrapper->setMinSolutionDistance(1.0);
   wrapper->setIKFrame(grasp_frame_transform, hand_frame);
@@ -346,18 +392,25 @@ mtc::Task MTCTaskNode::createTask(double x, double y, double z, double yaw)
   place->properties().configureInitFrom(mtc::Stage::PARENT,
                                         { "eef", "group", "ik_frame" });
 {
-  // Sample place pose
-  auto stage = std::make_unique<mtc::stages::GeneratePlacePose>("generate place pose");
-  stage->properties().configureInitFrom(mtc::Stage::PARENT);
-  stage->properties().set("marker_ns", "place_pose");
-  stage->setObject("object");
+  // Sample place pose - PLACE POSES LOOP
+  auto place_pose_stage = std::make_unique<mtc::stages::FixedPose>("set place pose");
 
-  geometry_msgs::msg::PoseStamped target_pose_msg;
-  target_pose_msg.header.frame_id = "object";
-  target_pose_msg.pose.position.y = 0.5;
-  target_pose_msg.pose.orientation.w = 1.0;
-  stage->setPose(target_pose_msg);
-  stage->setMonitoredStage(attach_object_stage);  // Hook into attach_object_stage
+  geometry_msgs::msg::PoseStamped place_pose;
+  place_pose.header.frame_id = "world";
+
+  if (color == "red") {
+    place_pose.pose.position = {0.4, -0.3, 0.1};
+  } else if (color == "green") {
+    place_pose.pose.position = {0.4, 0.0, 0.1};
+  } else if (color == "blue") {
+    place_pose.pose.position = {0.4, 0.3, 0.1};
+  } else {
+    place_pose.pose.position = {0.5, 0.5, 0.1};  // default
+  }
+  place_pose.pose.orientation.w = 1.0;
+
+  place_pose_stage->setPose(place_pose);
+  place_pose_stage->setMonitoredStage(attach_object_stage);
 
   // CHANGE > UPDATE > DEFINE MULTIPLE PLACE POSES:
   geometry_msgs::msg::PoseStamped place_red, place_green, place_blue;
@@ -435,7 +488,7 @@ return task;
 
 
   
-    //https://moveit.picknik.ai/humble/doc/tutorials/pick_and_place_with_moveit_task_constructor/pick_and_place_with_moveit_task_constructor.html
+    
 
 // Main function to run the task
 int main(int argc, char** argv)
@@ -456,8 +509,6 @@ int main(int argc, char** argv)
 
   mtc_task_node->setupPlanningScene();
   mtc_task_node->doTask();
-  //task for pick and place
-  task_ = createTask(x, y, z, yaw);
 
 
   spin_thread->join();
