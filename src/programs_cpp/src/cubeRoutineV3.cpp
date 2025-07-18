@@ -86,8 +86,34 @@ void MTCTaskNode::setupPlanningScene()
 
 void MTCTaskNode::doTask()
 {
-  task_ = createTask();
+  //task_ = createTask();
+  //task for pick and place
+  task_ = createTask(x, y, z, yaw);
+  //This is for the position server (using v1 first)
+  auto client = node_->create_client<GetPosition>("/get_position");
 
+  if (!client->wait_for_service(std::chrono::seconds(5))) {
+    RCLCPP_ERROR(node_->get_logger(), "Position service not available");
+    return;
+  }
+
+  auto request = std::make_shared<GetPosition::Request>();
+  request->color = "red";         // or dynamically choose
+  request->desired_z = 80.0;      // desired z height
+
+  auto future = client->async_send_request(request);
+  if (rclcpp::spin_until_future_complete(node_, future) != rclcpp::FutureReturnCode::SUCCESS) {
+    RCLCPP_ERROR(node_->get_logger(), "Failed to call get_position service");
+    return;
+  }
+
+  auto response = future.get();
+  double x = response->x_position / 1000.0;  // convert mm to meters
+  double y = response->y_position / 1000.0;
+  double z = response->z_position / 1000.0;
+  double yaw = response->yaw;
+
+  //MTC setup
   try
   {
     task_.init();
@@ -117,7 +143,7 @@ void MTCTaskNode::doTask()
 
 
 // Object - sets some initial properties for the task
-mtc::Task MTCTaskNode::createTask()
+mtc::Task MTCTaskNode::createTask(double x, double y, double z, double yaw)
 {
   moveit::task_constructor::Task task;
   task.stages()->setName("cube routine");
@@ -211,7 +237,24 @@ mtc::Task MTCTaskNode::createTask()
   // -- between pose orientations)
   {
   // Sample grasp pose
-  auto stage = std::make_unique<mtc::stages::GenerateGraspPose>("generate grasp pose");
+  // GENERATING GRASP POSE WITH THE SERVER
+  auto pose_stage = std::make_unique<mtc::stages::FixedPose>("set pick pose");
+
+  geometry_msgs::msg::PoseStamped pick_pose;
+  pick_pose.header.frame_id = "world";  // SET FRAME( CHANGE)
+  pick_pose.pose.position.x = x;
+  pick_pose.pose.position.y = y;
+  pick_pose.pose.position.z = z;
+
+  tf2::Quaternion q;
+  q.setRPY(0, 0, yaw);
+  pick_pose.pose.orientation = tf2::toMsg(q);
+
+  pose_stage->setPose(pick_pose);
+  pose_stage->setMonitoredStage(current_state_ptr);
+
+
+
   stage->properties().configureInitFrom(mtc::Stage::PARENT);
   stage->properties().set("marker_ns", "grasp_pose");
   stage->setPreGraspPose("open");
@@ -316,6 +359,17 @@ mtc::Task MTCTaskNode::createTask()
   stage->setPose(target_pose_msg);
   stage->setMonitoredStage(attach_object_stage);  // Hook into attach_object_stage
 
+  // CHANGE > UPDATE > DEFINE MULTIPLE PLACE POSES:
+  geometry_msgs::msg::PoseStamped place_red, place_green, place_blue;
+
+  place_red.pose.position = {0.4, -0.3, 0.1};
+  place_green.pose.position = {0.4, 0.0, 0.1};
+  place_blue.pose.position = {0.4, 0.3, 0.1};
+  //====================================================
+
+
+
+
   // Compute IK
   auto wrapper =
       std::make_unique<mtc::stages::ComputeIK>("place pose IK", std::move(stage));
@@ -402,6 +456,9 @@ int main(int argc, char** argv)
 
   mtc_task_node->setupPlanningScene();
   mtc_task_node->doTask();
+  //task for pick and place
+  task_ = createTask(x, y, z, yaw);
+
 
   spin_thread->join();
   rclcpp::shutdown();
