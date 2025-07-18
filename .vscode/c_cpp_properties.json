@@ -13,7 +13,9 @@
                 "/opt/ros/jazzy/include/moveit_ros_planning_interface",
                 "${workspaceFolder}",
                 "${workspaceFolder}/build/position_tracker/rosidl_generator_cpp",
-                "/opt/ros/jazzy/include/geometry_msgs"
+                "/opt/ros/jazzy/include/geometry_msgs",
+                "${workspaceFolder}/src/moveit_task_constructor/core/include",
+                "${workspaceFolder}/build/moveit_task_constructor_msgs/rosidl_generator_cpp"
             ],
             "name": "ROS",
             "intelliSenseMode": "gcc-x64",

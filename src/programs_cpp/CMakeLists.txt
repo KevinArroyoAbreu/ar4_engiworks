@@ -15,6 +15,13 @@ find_package(moveit_task_constructor_msgs REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(tf2_ros REQUIRED)
 
+# Other requirements for C and Cpp
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
 
 
 # Executable 1
@@ -44,13 +51,13 @@ ament_target_dependencies(cubeRoutineV3
   rclcpp
   moveit_ros_planning_interface
   position_tracker
-  move_it_task_constructor_core
+  moveit_task_constructor_core
   rclcpp
 )
 target_include_directories(cubeRoutineV3 PUBLIC
 $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 $<INSTALL_INTERFACE:include>)
-target_compile_features(mtc_tutorial PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+#target_compile_features(moveit_task_constructor PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 
 
 # Launch file

@@ -7,10 +7,11 @@
 #include <cmath>
 #include <tf2/LinearMath/Quaternion.h>
 #include <moveit/planning_scene/planning_scene.h>
-#include <moveit/planning_scene_interface/planning_scene_interface.h>
+#include <moveit/planning_scene_interface/planning_scene_interface.hpp>
 #include <moveit/task_constructor/task.h>
 #include <moveit/task_constructor/solvers.h>
 #include <moveit/task_constructor/stages.h>
+//#include <moveit/task_constructor/exceptions.h>
 #if __has_include(<tf2_geometry_msgs/tf2_geometry_msgs.hpp>)
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #else
@@ -34,8 +35,10 @@
 //https://moveit.picknik.ai/humble/doc/tutorials/pick_and_place_with_moveit_task_constructor/pick_and_place_with_moveit_task_constructor.html
 
 using GetPosition = position_tracker::srv::GetPosition;
+namespace mtc = moveit::task_constructor;
 
-class MTCTaskNode
+
+class MTCTaskNode 
 {
 public:
   MTCTaskNode(const rclcpp::NodeOptions& options);
@@ -72,7 +75,7 @@ void MTCTaskNode::doTask()// DO TASK DO TASK ===================//
 {
   //task_ = createTask();
   //task for pick and place
-  task_ = createTask(x, y, z, yaw);
+  task_ = createTask(x, y, z, yaw, "red");
 
 
   //MTC setup
@@ -82,13 +85,17 @@ void MTCTaskNode::doTask()// DO TASK DO TASK ===================//
   }
   catch (mtc::InitStageException& e)
   {
-    RCLCPP_ERROR_STREAM(LOGGER, e);
+    //RCLCPP_ERROR_STREAM(LOGGER, e);
+    RCLCPP_ERROR_STREAM(node_->get_logger(), e);
+
     return;
   }
 
   if (!task_.plan(5))
   {
-    RCLCPP_ERROR_STREAM(LOGGER, "Task planning failed");
+    //RCLCPP_ERROR_STREAM(LOGGER, "Task planning failed");
+    RCLCPP_ERROR_STREAM(node_->get_logger(), e);
+
     return;
   }
   task_.introspection().publishSolution(*task_.solutions().front());
@@ -96,7 +103,9 @@ void MTCTaskNode::doTask()// DO TASK DO TASK ===================//
   auto result = task_.execute(*task_.solutions().front());
   if (result.val != moveit_msgs::msg::MoveItErrorCodes::SUCCESS)
   {
-    RCLCPP_ERROR_STREAM(LOGGER, "Task execution failed");
+   // RCLCPP_ERROR_STREAM(LOGGER, "Task execution failed");
+    RCLCPP_ERROR_STREAM(node_->get_logger(), e);
+
     return;
   }
 
@@ -110,7 +119,10 @@ void MTCTaskNode::doTask()// DO TASK DO TASK ===================//
     geometry_msgs::msg::PoseStamped pose;
     pose.header.frame_id = "world";
     pose.pose.position.x = 0.199;
-    pose.pose.position.y = (color == "red") ? -0.41 : (color == "green") ? -0.44 : (color == "blue") ? -0.48;
+    pose.pose.position.y =
+      (color == "red") ? -0.41 :
+      (color == "green") ? -0.44 :
+      (color == "blue") ? -0.48 :
     pose.pose.position.z = 0.3;
     pose.pose.orientation.w = 0.0087;
     place_poses[color] = pose;
@@ -126,13 +138,17 @@ void MTCTaskNode::doTask()// DO TASK DO TASK ===================//
     req->desired_z = 80.0;
 
     if (!client->wait_for_service(std::chrono::seconds(3))) {
-      RCLCPP_ERROR(node_->get_logger(), "Service unavailable");
+      //RCLCPP_ERROR(node_->get_logger(), "Service unavailable");
+      RCLCPP_ERROR_STREAM(node_->get_logger(), e);
+
       continue;
     }
 
     auto future = client->async_send_request(req);
     if (rclcpp::spin_until_future_complete(node_, future) != rclcpp::FutureReturnCode::SUCCESS) {
-      RCLCPP_WARN(node_->get_logger(), "Failed to get position for %s", color.c_str());
+      //RCLCPP_WARN(node_->get_logger(), "Failed to get position for %s", color.c_str());
+      RCLCPP_ERROR_STREAM(node_->get_logger(), e);
+
       continue;
     }
 
@@ -148,12 +164,16 @@ void MTCTaskNode::doTask()// DO TASK DO TASK ===================//
     try {
       task_.init();
       if (!task_.plan(5)) {
-        RCLCPP_ERROR(node_->get_logger(), "Planning failed for %s", color.c_str());
+      //  RCLCPP_ERROR(node_->get_logger(), "Planning failed for %s", color.c_str());
+        RCLCPP_ERROR_STREAM(node_->get_logger(), e);
+
         continue;
       }
       task_.execute(*task_.solutions().front());
     } catch (const std::exception& e) {
-      RCLCPP_ERROR(node_->get_logger(), "Exception in task execution: %s", e.what());
+     // RCLCPP_ERROR(node_->get_logger(), "Exception in task execution: %s", e.what());
+      RCLCPP_ERROR_STREAM(node_->get_logger(), e);
+
     }
   }
 
@@ -262,7 +282,9 @@ mtc::Task MTCTaskNode::createTask(double x, double y, double z, double yaw, cons
   {
   // Sample grasp pose
   // GENERATING GRASP POSE WITH THE SERVER
-  auto pose_stage = std::make_unique<mtc::stages::FixedPose>("set pick pose");
+  
+
+  //auto pose_stage = std::make_unique<mtc::stages::MoveTo>("set pick pose");
 
   geometry_msgs::msg::PoseStamped pick_pose;
   pick_pose.header.frame_id = "world";  // SET FRAME( CHANGE)
@@ -270,14 +292,24 @@ mtc::Task MTCTaskNode::createTask(double x, double y, double z, double yaw, cons
   pick_pose.pose.position.y = y;
   pick_pose.pose.position.z = z;
 
-  tf2::Quaternion q;
-  q.setRPY(0, 0, yaw);
+  // tf2::Quaternion q;
+  // q.setRPY(0, 0, yaw);
+  // pick_pose.pose.orientation = tf2::toMsg(q);
+  Eigen::AngleAxisd yaw_angle(yaw, Eigen::Vector3d::UnitZ());
+  Eigen::Quaterniond q(yaw_angle);
+
+  // Convert to geometry_msgs::msg::Quaternion
   pick_pose.pose.orientation = tf2::toMsg(q);
 
-  pose_stage->setPose(pick_pose);
-  pose_stage->setMonitoredStage(current_state_ptr);
+  auto pose_stage = std::make_unique<mtc::stages::MoveTo>("set pick pose");
 
+ // pose_stage->setPose(pick_pose);
+ // pose_stage->setMonitoredStage(current_state_ptr);
 
+  move_to->setGoal(generate_pose->getGoal());
+
+  pipeline->insert(std::move(generate_pose));
+  pipeline->insert(std::move(move_to));
 
   stage->properties().configureInitFrom(mtc::Stage::PARENT);
   stage->properties().set("marker_ns", "grasp_pose");
@@ -288,9 +320,10 @@ mtc::Task MTCTaskNode::createTask(double x, double y, double z, double yaw, cons
 
   //StampedPose before IK computing (Eigen transform)
   Eigen::Isometry3d grasp_frame_transform;
-  Eigen::Quaterniond q = Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitX()) *
-                        Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitY()) *
-                        Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitZ());
+  // Eigen::Quaterniond q = Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitX()) *
+  //                       Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitY()) *
+  //                       Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitZ());
+  
 /* The above code snippet is part of a C++ program that is likely part of a robotic manipulation task
 planning system. Here is a breakdown of what the code is doing: */
   grasp_frame_transform.linear() = q.matrix();
@@ -374,31 +407,16 @@ planning system. Here is a breakdown of what the code is doing: */
                                         { "eef", "group", "ik_frame" });
 {
   // Sample place pose - PLACE POSES LOOP
-  auto place_pose_stage = std::make_unique<mtc::stages::FixedPose>("set place pose");
+  auto generate_pose = std::make_unique<GeneratePose>("generate place pose");
+  generate_pose->setPose(place_poses[color]);
 
-  geometry_msgs::msg::PoseStamped place_pose;
-  place_pose.header.frame_id = "world";
+  auto move_to = std::make_unique<MoveTo>("move to pick pose");
+  move_to->setGroup("ar_manipulator");  // for example, set planning group
 
-  if (color == "red") {
-    place_pose.pose.position = {0.4, -0.3, 0.1};
-  } else if (color == "green") {
-    place_pose.pose.position = {0.4, 0.0, 0.1};
-  } else if (color == "blue") {
-    place_pose.pose.position = {0.4, 0.3, 0.1};
-  } else {
-    place_pose.pose.position = {0.5, 0.5, 0.1};  // default
-  }
-  place_pose.pose.orientation.w = 1.0;
+  pipeline->insert(std::move(generate_pose));
+  pipeline->insert(std::move(move_to));
+  //auto place_pose_stage = std::make_unique<mtc::stages::MoveTo>("set place pose");
 
-  place_pose_stage->setPose(place_pose);
-  place_pose_stage->setMonitoredStage(attach_object_stage);
-
-  // CHANGE > UPDATE > DEFINE MULTIPLE PLACE POSES:
-  geometry_msgs::msg::PoseStamped place_red, place_green, place_blue;
-
-  place_red.pose.position = {0.4, -0.3, 0.1};
-  place_green.pose.position = {0.4, 0.0, 0.1};
-  place_blue.pose.position = {0.4, 0.3, 0.1};
   //====================================================
 
 
