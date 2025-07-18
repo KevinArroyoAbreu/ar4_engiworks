@@ -1,22 +1,31 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from moveit_configs_utils import MoveItConfigsBuilder
+from ament_index_python.packages import get_package_share_directory
+import os
+import yaml
 
-# //UPDATE THIS
+def generate_launch_description():
+    # Path to kinematics.yaml
+    kinematics_path = os.path.join(
+        get_package_share_directory("annin_ar4_moveit_config"),
+        "config", "kinematics.yaml"
+    )
+    with open(kinematics_path, 'r') as f:
+        kinematics_yaml_string = f.read()
 
-# def generate_launch_description():
-#     moveit_config = MoveItConfigsBuilder("moveit_resources_panda").to_dict()
 
-#     # MTC Demo node
-#     pick_place_demo = Node(
-#         package="mtc_tutorial",
-#         executable="mtc_tutorial",
-#         output="screen",
-#         parameters=[
-#             moveit_config,
-#         ],
-#     )
+    # Define your C++ node
+    task_launch = Node(
+        package='programs_cpp',
+        executable='cubeRoutineV3',
+        name='cubeRoutineV3',
+        output='screen',
+        namespace='',
+        parameters=[
+            {"robot_description_kinematics": kinematics_yaml_string}
+        ]
+    )
 
-#     return LaunchDescription([pick_place_demo])
-
-#This is for launching moveit
+    return LaunchDescription([
+        task_launch
+    ])
