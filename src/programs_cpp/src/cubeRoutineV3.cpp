@@ -66,25 +66,6 @@ MTCTaskNode::MTCTaskNode(const rclcpp::NodeOptions& options)
 {
 }
 
-// Method planning scene setup
-void MTCTaskNode::setupPlanningScene()
-{
-  moveit_msgs::msg::CollisionObject object;
-  object.id = "object";
-  object.header.frame_id = "world";
-  object.primitives.resize(1);
-  object.primitives[0].type = shape_msgs::msg::SolidPrimitive::CYLINDER;
-  object.primitives[0].dimensions = { 0.1, 0.02 };
-
-  geometry_msgs::msg::Pose pose;
-  pose.position.x = 0.5;
-  pose.position.y = -0.25;
-  object.pose = pose;
-
-  moveit::planning_interface::PlanningSceneInterface psi;
-  psi.applyCollisionObject(object);
-}
-
 //Interface with the MoveIt Task Constructor
 
 void MTCTaskNode::doTask()// DO TASK DO TASK ===================//
@@ -128,10 +109,10 @@ void MTCTaskNode::doTask()// DO TASK DO TASK ===================//
   for (const auto& color : colors) {
     geometry_msgs::msg::PoseStamped pose;
     pose.header.frame_id = "world";
-    pose.pose.position.x = 0.5;
-    pose.pose.position.y = (color == "red") ? -0.3 : (color == "green") ? 0.0 : 0.3;
-    pose.pose.position.z = 0.1;
-    pose.pose.orientation.w = 1.0;
+    pose.pose.position.x = 0.199;
+    pose.pose.position.y = (color == "red") ? -0.41 : (color == "green") ? -0.44 : (color == "blue") ? -0.48;
+    pose.pose.position.z = 0.3;
+    pose.pose.orientation.w = 0.0087;
     place_poses[color] = pose;
   }
 
@@ -231,7 +212,7 @@ mtc::Task MTCTaskNode::createTask(double x, double y, double z, double yaw, cons
     std::make_unique<mtc::stages::MoveTo>("open hand", interpolation_planner);
     stage_open_hand->setGroup(hand_group_name);
     stage_open_hand->setGoal("open");
-    task.add(std::move(OPEN HAND STATE));
+    task.add(std::move(stage_open_hand));
 
   // Connector Stage (bridges before and after)
   auto stage_move_to_pick = std::make_unique<mtc::stages::Connect>(
@@ -342,7 +323,7 @@ planning system. Here is a breakdown of what the code is doing: */
 {
   auto stage = std::make_unique<mtc::stages::MoveTo>("close hand", interpolation_planner);
   stage->setGroup(hand_group_name);
-  stage->setGoal("close"); // UPDATE THIS
+  stage->setGoal("closed"); // UPDATE THIS
   grasp->insert(std::move(stage));
 }
 //Modify planning scene (attach object)
