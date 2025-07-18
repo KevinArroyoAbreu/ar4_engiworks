@@ -19,6 +19,14 @@
   <exec_depend>ros2launch</exec_depend>
 
   <depend>position_tracker</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <exec_depend>moveit_task_constructor_core</exec_depend>
+  <exec_depend>moveit_task_constructor_msgs</exec_depend>
+  <exec_depend>pluginlib</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
   
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
@@ -27,3 +35,7 @@
     <build_type>ament_cmake</build_type>
   </export>
 </package>
+
+
+
+

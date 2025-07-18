@@ -10,6 +10,11 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(position_tracker REQUIRED)
+find_package(moveit_task_constructor_core REQUIRED)
+find_package(moveit_task_constructor_msgs REQUIRED)
+find_package(pluginlib REQUIRED)
+find_package(tf2_ros REQUIRED)
+
 
 
 # Executable 1
@@ -34,6 +39,20 @@ ament_target_dependencies(cubeRoutineV2
   position_tracker
 )
 
+add_executable(cubeRoutineV3 src/cubeRoutineV3.cpp)
+ament_target_dependencies(cubeRoutineV3
+  rclcpp
+  moveit_ros_planning_interface
+  position_tracker
+  move_it_task_constructor_core
+  rclcpp
+)
+target_include_directories(cubeRoutineV3 PUBLIC
+$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+$<INSTALL_INTERFACE:include>)
+target_compile_features(mtc_tutorial PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+
+
 # Launch file
 install(
   DIRECTORY launch
@@ -41,7 +60,7 @@ install(
 )
 
 # Install targets
-install(TARGETS prog1 cubeRoutine cubeRoutineV2
+install(TARGETS prog1 cubeRoutine cubeRoutineV2 cubeRoutineV3
   DESTINATION lib/${PROJECT_NAME}
 )
 
